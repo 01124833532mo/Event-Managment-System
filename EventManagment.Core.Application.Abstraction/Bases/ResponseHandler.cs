@@ -5,7 +5,7 @@ namespace EventManagment.Core.Application.Abstraction.Bases
     public class ResponseHandler
     {
 
-        public Response<T> Deleted<T>(string Message = null)
+        public Response<T> Deleted<T>(string Message = null!)
         {
 
 

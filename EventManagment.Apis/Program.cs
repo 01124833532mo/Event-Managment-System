@@ -1,4 +1,5 @@
-using EventManagment.Apis.Controller;
+using EventManagment.Apis.Extintions;
+using EventManagment.Infrastructure.Persistence;
 using EventManagment.Shared.Errors.Response;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,12 +20,16 @@ builder.Services.AddControllers()
             return new BadRequestObjectResult(new ApiValidationErrorResponse() { Erroes = errors });
         };
     })
-.AddApplicationPart(typeof(AssemblyInformation).Assembly);
+.AddApplicationPart(typeof(EventManagment.Apis.Controller.AssemblyInformation).Assembly);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddPersistenceServices(builder.Configuration);
+
 var app = builder.Build();
+await app.InitializerEventManagmentContextAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
