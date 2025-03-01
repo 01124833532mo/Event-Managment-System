@@ -1,5 +1,8 @@
 using EventManagment.Apis.Extintions;
+using EventManagment.Apis.MiddleWares;
+using EventManagment.Core.Application;
 using EventManagment.Infrastructure.Persistence;
+using EventManagment.Shared;
 using EventManagment.Shared.Errors.Response;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,9 +30,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddPersistenceServices(builder.Configuration);
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddSharedDependency(builder.Configuration);
 
 var app = builder.Build();
 await app.InitializerEventManagmentContextAsync();
+app.UseMiddleware<ExeptionHandlerMiddleware>();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
