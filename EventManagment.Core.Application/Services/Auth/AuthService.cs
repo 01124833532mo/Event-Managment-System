@@ -4,6 +4,7 @@ using EventManagment.Shared.Errors.Models;
 using EventManagment.Shared.Models.Auth;
 using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,10 +14,71 @@ using System.Text;
 namespace EventManagment.Core.Application.Services.Auth
 {
     public class AuthService(UserManager<ApplicationUser> userManager
-        , SignInManager<ApplicationUser> signInManager
+        , SignInManager<ApplicationUser> signInManager,
+        RoleManager<IdentityRole> roleManager
         , IOptions<JwtSettings> jwtsettings) : IAuthService
     {
         private readonly JwtSettings _jwtsettings = jwtsettings.Value;
+
+        public async Task<RolesToReturn> CreateRoleAsync(RoleDtoBase roleDto)
+        {
+            var roleExsits = await roleManager.RoleExistsAsync(roleDto.Name);
+
+            if (!roleExsits)
+            {
+                var result = await roleManager.CreateAsync(new IdentityRole(roleDto.Name.Trim()));
+                var role = await roleManager.FindByNameAsync(roleDto.Name);
+                var mappedroleresult = new RolesToReturn() { Id = role!.Id, Name = role.Name! };
+                return mappedroleresult;
+            }
+            else
+            {
+                throw new BadRequestExeption("This Role already Exists");
+            }
+
+
+        }
+
+        public async Task<RolesToReturn> UpdateRole(string id, RoleDtoBase roleDto)
+        {
+            var roleExsists = await roleManager.RoleExistsAsync(roleDto.Name);
+            if (!roleExsists)
+            {
+                var role = await roleManager.FindByIdAsync(id);
+                role!.Name = roleDto.Name;
+                await roleManager.UpdateAsync(role);
+                var result = new RolesToReturn() { Id = role!.Id, Name = role.Name! };
+                return result;
+            }
+            else
+            {
+                throw new BadRequestExeption("this Role Already is Exsists");
+            }
+        }
+        public async Task<IEnumerable<RolesToReturn>> GetRolesAsync()
+        {
+            var roles = await roleManager.Roles.ToListAsync();
+            var result = roles.Select(role => new RolesToReturn
+            {
+                Id = role.Id,
+                Name = role.Name ?? string.Empty
+            }).ToList();
+
+            return result;
+        }
+
+
+
+
+        public async Task DeleteRole(string id)
+        {
+            var role = await roleManager.FindByIdAsync(id);
+            if (role is null)
+            {
+                throw new NotFoundExeption(nameof(role), id);
+            }
+            await roleManager.DeleteAsync(role!);
+        }
         public async Task<UserToReturn> LoginAsync(LoginDto loginDto)
         {
             var user = await userManager.FindByEmailAsync(loginDto.Email);
@@ -166,6 +228,146 @@ namespace EventManagment.Core.Application.Services.Auth
 
 
             return new JwtSecurityTokenHandler().WriteToken(tokenObj);
+        }
+
+        public async Task<IEnumerable<AttendencesViewModel>> GetAllAttendences()
+        {
+
+            var users = await userManager.Users.Where(u => u.Types == Types.Attendee)
+    .Select(u => new AttendencesViewModel
+    {
+        Id = u.Id,
+        FullName = u.FullName!,
+        PhoneNumber = u.PhoneNumber!,
+        Email = u.Email!,
+        Types = u.Types.ToString()
+    })
+    .ToListAsync();
+
+            foreach (var user in users)
+            {
+                // Await the GetRolesAsync call properly here
+                user.Roles = await userManager.GetRolesAsync(await userManager.FindByIdAsync(user.Id));
+            }
+
+            return users;
+
+        }
+
+        public async Task<UserToReturn> CreateAttendences(CreateAttendenceDro createUserDro)
+        {
+            var user = new ApplicationUser
+            {
+                FullName = createUserDro.Name,
+                PhoneNumber = createUserDro.PhoneNumber,
+                Types = createUserDro.Type,
+                Email = createUserDro.Email
+            };
+
+
+            var email = await userManager.FindByEmailAsync(user.Email);
+            if (email is not null) throw new BadRequestExeption($" Email is Already Exsist ,Please Enter Anthor Email!");
+
+
+            var result = await userManager.CreateAsync(user, createUserDro.Password);
+
+            if (!result.Succeeded)
+                throw new ValidationExeption() { Errors = result.Errors.Select(E => E.Description) };
+
+
+
+            // Assign the "User" role to the newly created user
+            var roleResult = await userManager.AddToRoleAsync(user, Types.Attendee.ToString());
+            if (!roleResult.Succeeded)
+                throw new ValidationExeption() { Errors = roleResult.Errors.Select(E => E.Description) };
+
+            //var refresktoken = GenerateRefreshToken();
+
+            //user.RefreshTokens.Add(new RefreshToken()
+            //{
+            //    Token = refresktoken.Token,
+            //    ExpireOn = refresktoken.ExpireOn
+            //});
+
+            await userManager.UpdateAsync(user);
+
+            var response = new UserToReturn
+            {
+                Id = user.Id,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email!,
+                Types = user.Types.ToString(),
+                FullName = user.FullName,
+                Token = await GenerateTokenAsync(user),
+                RefreshToken = "",
+                RefreshTokenExpirationDate = DateTime.Now
+
+            };
+
+            return response;
+        }
+
+        public async Task<AttendentRoleViewModel> GetAttendence(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user is null) throw new NotFoundExeption("User Not Found", nameof(id));
+            var allRoles = await roleManager.Roles.ToListAsync();
+            var viewModel = new AttendentRoleViewModel()
+            {
+                Id = user.Id,
+                Name = user.FullName!,
+                PhoneNumber = user.PhoneNumber!,
+                Email = user.Email!,
+                Types = user.Types.ToString(),
+                Roles = allRoles.Select(
+                    r => new RoleDto()
+                    {
+                        Id = r.Id,
+                        Name = r.Name!,
+                        IsSelected = userManager.IsInRoleAsync(user, r.Name).Result
+                    }).Where(u => u.IsSelected == true).ToList()
+            };
+
+            return viewModel;
+        }
+
+        public async Task<string> DeleteAttendence(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+
+            if (user is null) throw new NotFoundExeption("User Not Found", nameof(id));
+
+            var result = await userManager.DeleteAsync(user);
+
+            if (result.Succeeded)
+                return "Delete Successed";
+            else
+            {
+                return "Operation Faild";
+            }
+
+
+        }
+        public async Task<IEnumerable<OrganizerViewModel>> GetAllOrganizers()
+        {
+            var techs = await userManager.Users.Where(u => u.Types == Types.Organizer)
+   .Select(u => new OrganizerViewModel
+   {
+       Id = u.Id,
+       FullName = u.FullName!,
+       PhoneNumber = u.PhoneNumber!,
+       Email = u.Email!,
+       Types = u.Types.ToString(),
+   })
+   .ToListAsync();
+
+            foreach (var tech in techs)
+            {
+                // Await the GetRolesAsync call properly here
+                tech.Roles = await userManager.GetRolesAsync(await userManager.FindByIdAsync(tech.Id));
+            }
+
+            return techs;
         }
 
 
