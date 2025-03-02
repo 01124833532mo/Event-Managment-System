@@ -6,5 +6,8 @@ namespace EventManagment.Core.Application.Abstraction.Services.Auth
     {
         Task<UserToReturn> LoginAsync(LoginDto loginDto);
 
+        Task<UserToReturn> RegisterAsync(RegisterDto registerDto);
+
+
     }
 }

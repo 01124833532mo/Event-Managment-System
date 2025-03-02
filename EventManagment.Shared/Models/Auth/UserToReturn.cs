@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EventManagment.Shared.Models.Auth
+﻿namespace EventManagment.Shared.Models.Auth
 {
-    public record UserToReturn(
-      string Id ,
-     string FullName ,
-      string PhoneNumber ,
-      string Email ,
-      string Types,
-      string Token ,
-     string RefreshToken,
-     DateTime RefreshTokenExpirationDate );
+    public class UserToReturn
+    {
+        public required string Id { get; set; }
+        public required string FullName { get; set; }
+        public required string PhoneNumber { get; set; }
+        public required string Email { get; set; }
+        public required string Types { get; set; }
+        public required string Token { get; set; }
+        public required string RefreshToken { get; set; }
+        public required DateTime RefreshTokenExpirationDate { get; set; }
+    }
 
-    
 }

@@ -12,7 +12,8 @@ using System.Text;
 
 namespace EventManagment.Core.Application.Services.Auth
 {
-    public class AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager
+    public class AuthService(UserManager<ApplicationUser> userManager
+        , SignInManager<ApplicationUser> signInManager
         , IOptions<JwtSettings> jwtsettings) : IAuthService
     {
         private readonly JwtSettings _jwtsettings = jwtsettings.Value;
@@ -36,40 +37,95 @@ namespace EventManagment.Core.Application.Services.Auth
 
             if (userroles.Any(role => role == Roles.Organizer))
             {
-                var response = new UserToReturn(
-                    Id: user.Id,
-                    FullName: user.FullName,
-                    PhoneNumber: user.PhoneNumber!,
-                    Email: user.Email!,
-                    Types: user.Types.ToString(),
-                    Token: await GenerateTokenAsync(user),
-                    RefreshToken: string.Empty, // No refresh token for organizer
-                    RefreshTokenExpirationDate: DateTime.MinValue // No expiration date for organizer
-                );
+                var response = new UserToReturn
+                {
+                    Id = user.Id,
+                    FullName = user.FullName,
+                    PhoneNumber = user.PhoneNumber!,
+                    Email = user.Email!,
+                    Types = user.Types.ToString(),
+                    Token = await GenerateTokenAsync(user),
+                    RefreshToken = string.Empty, // No refresh token for organizer
+                    RefreshTokenExpirationDate = DateTime.MinValue // No expiration date for organizer
+                };
                 return response;
-
             }
             else
             {
-
-
-                var response = new UserToReturn(
-
-                    Id: user.Id,
-                    FullName: user.FullName!,
-                    PhoneNumber: user.PhoneNumber!,
-                    Email: user.Email!,
-                    Types: user.Types.ToString(),
-                    Token: await GenerateTokenAsync(user),
-                    RefreshTokenExpirationDate: DateTime.MinValue,
-                    RefreshToken: ""
-
-                );
+                var response = new UserToReturn
+                {
+                    Id = user.Id,
+                    FullName = user.FullName!,
+                    PhoneNumber = user.PhoneNumber!,
+                    Email = user.Email!,
+                    Types = user.Types.ToString(),
+                    Token = await GenerateTokenAsync(user),
+                    RefreshToken = string.Empty, // Initialize with empty string
+                    RefreshTokenExpirationDate = DateTime.MinValue // Initialize with default value
+                };
                 //await CheckRefreshToken(userManager, user, response);
 
                 return response;
             }
         }
+        public async Task<UserToReturn> RegisterAsync(RegisterDto registerDto)
+        {
+            //if (EmailExists(model.Email).Result)
+            //    throw new BadRequestExeption("This Email Is Already in User");
+            var email = userManager.Users.Where(e => e.Email == registerDto.Email).FirstOrDefault();
+            if (email is not null)
+                throw new BadRequestExeption("Email Already Exsist");
+
+            var user = new ApplicationUser()
+            {
+                FullName = registerDto.FullName,
+                Email = registerDto.Email,
+                UserName = registerDto.Email,
+                PhoneNumber = registerDto.PhoneNumber,
+                Types = registerDto.Types,
+
+
+            };
+
+            var result = await userManager.CreateAsync(user, registerDto.Password);
+
+            if (!result.Succeeded) throw new ValidationExeption() { Errors = result.Errors.Select(p => p.Description) };
+
+            //var refresktoken = GenerateRefreshToken();
+
+            //user.RefreshTokens.Add(new RefreshToken()
+            //{
+            //    Token = refresktoken.Token,
+            //    ExpireOn = refresktoken.ExpireOn
+            //});
+
+            //await _userManager.UpdateAsync(user);
+
+
+
+            var roleresult = registerDto.Types.ToString() == Roles.Attendee ? await userManager.AddToRoleAsync(user, Roles.Attendee.ToString())
+                : await userManager.AddToRoleAsync(user, Roles.Organizer.ToString());
+
+            if (!roleresult.Succeeded)
+                throw new ValidationExeption() { Errors = roleresult.Errors.Select(E => E.Description) };
+
+            var response = new UserToReturn()
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email!,
+                PhoneNumber = user.PhoneNumber,
+                Types = user.Types.ToString(),
+                Token = await GenerateTokenAsync(user),
+
+                RefreshToken = "refresktoken.Token",
+                RefreshTokenExpirationDate = DateTime.Now,
+            };
+
+            return response;
+        }
+
+
 
         private async Task<string> GenerateTokenAsync(ApplicationUser user)
         {
@@ -111,5 +167,7 @@ namespace EventManagment.Core.Application.Services.Auth
 
             return new JwtSecurityTokenHandler().WriteToken(tokenObj);
         }
+
+
     }
 }

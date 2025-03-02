@@ -1,6 +1,11 @@
 ﻿namespace EventManagment.Shared.Models.Auth
 {
-    public record LoginDto(string Email, string Password);
+    public class LoginDto
+    {
+        public required string Email { get; set; }
+        public required string Password { get; set; }
+
+    }
 
 
 }

@@ -16,5 +16,12 @@ namespace EventManagment.Apis.Controller.Controllers.Auth
             return Ok(result);
         }
 
+        [HttpPost("Register")]
+
+        public async Task<ActionResult<UserToReturn>> Register(RegisterDto model)
+        {
+            var result = await serviceManager.AuthService.RegisterAsync(model);
+            return Ok(result);
+        }
     }
 }
