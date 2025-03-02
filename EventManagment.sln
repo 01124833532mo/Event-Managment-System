@@ -13,21 +13,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{A7713916-96EC-4F35-B9FA-0D41F31AF8AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventManagment.Apis", "EventManagment.Apis\EventManagment.Apis.csproj", "{DB0CA8B2-1A94-4B0F-A32A-41FE427063BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventManagment.Apis", "EventManagment.Apis\EventManagment.Apis.csproj", "{DB0CA8B2-1A94-4B0F-A32A-41FE427063BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventManagment.Apis.Controller", "EventManagment.Apis.Controller\EventManagment.Apis.Controller.csproj", "{BC16E77F-89B5-4F89-A641-CEE08CDC68E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventManagment.Apis.Controller", "EventManagment.Apis.Controller\EventManagment.Apis.Controller.csproj", "{BC16E77F-89B5-4F89-A641-CEE08CDC68E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventManagment.Core.Application", "EventManagment.Core.Application\EventManagment.Core.Application.csproj", "{7EB2E3B6-C181-4673-B2D1-3351A249142C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventManagment.Core.Application", "EventManagment.Core.Application\EventManagment.Core.Application.csproj", "{7EB2E3B6-C181-4673-B2D1-3351A249142C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventManagment.Core.Application.Abstraction", "EventManagment.Core.Application.Abstraction\EventManagment.Core.Application.Abstraction.csproj", "{CDEE6579-F38D-4CAF-BC12-2DB181E43A48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventManagment.Core.Application.Abstraction", "EventManagment.Core.Application.Abstraction\EventManagment.Core.Application.Abstraction.csproj", "{CDEE6579-F38D-4CAF-BC12-2DB181E43A48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventManagment.Core.Domain", "EventManagment.Core.Domain\EventManagment.Core.Domain.csproj", "{32D263E8-EF6F-48A6-8D74-872B2219AE97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventManagment.Core.Domain", "EventManagment.Core.Domain\EventManagment.Core.Domain.csproj", "{32D263E8-EF6F-48A6-8D74-872B2219AE97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventManagment.Infrastructure", "EventManagment.Infrastructure\EventManagment.Infrastructure.csproj", "{1117EC1D-BD70-4DFA-A05B-56143F359B53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventManagment.Infrastructure", "EventManagment.Infrastructure\EventManagment.Infrastructure.csproj", "{1117EC1D-BD70-4DFA-A05B-56143F359B53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventManagment.Infrastructure.Persistence", "EventManagment.Infrastructure.Persistence\EventManagment.Infrastructure.Persistence.csproj", "{6A81A6BB-01C4-48C6-AAA3-7479F63A4993}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventManagment.Infrastructure.Persistence", "EventManagment.Infrastructure.Persistence\EventManagment.Infrastructure.Persistence.csproj", "{6A81A6BB-01C4-48C6-AAA3-7479F63A4993}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventManagment.Shared", "EventManagment.Shared\EventManagment.Shared.csproj", "{0936A2A9-90ED-49A9-AF26-EDFA7FB838BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventManagment.Shared", "EventManagment.Shared\EventManagment.Shared.csproj", "{0936A2A9-90ED-49A9-AF26-EDFA7FB838BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -16,4 +16,10 @@
     <ProjectReference Include="..\EventManagment.Core.Domain\EventManagment.Core.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="_Data\Interceptors\" />
+    <Folder Include="_Data\Migrations\" />
+    <Folder Include="_Data\Seeds\" />
+  </ItemGroup>
+
 </Project>
