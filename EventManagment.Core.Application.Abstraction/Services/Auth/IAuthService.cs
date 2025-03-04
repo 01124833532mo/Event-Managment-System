@@ -1,4 +1,6 @@
-﻿using EventManagment.Shared.Models.Auth;
+﻿using EventManagment.Shared.Models._Common.Emails;
+using EventManagment.Shared.Models.Auth;
+using System.Security.Claims;
 
 namespace EventManagment.Core.Application.Abstraction.Services.Auth
 {
@@ -23,6 +25,18 @@ namespace EventManagment.Core.Application.Abstraction.Services.Auth
 
         Task<string> DeleteAttendence(string id);
         Task<IEnumerable<OrganizerViewModel>> GetAllOrganizers();
+
+        Task<SuccessDto> ForgetPasswordByEmailasync(ForgetPasswordByEmailDto emailDto);
+        Task<SuccessDto> VerifyCodeByEmailAsync(ResetCodeConfirmationByEmailDto resetCodeDto);
+        Task<UserToReturn> ResetPasswordByEmailAsync(ResetPasswordByEmailDto resetCodeDto);
+
+        Task<UserToReturn> GetRefreshToken(RefreshDto refreshDto, CancellationToken cancellationToken = default);
+
+        Task<bool> RevokeRefreshTokenAsync(RefreshDto refreshDto, CancellationToken cancellationToken = default);
+
+        Task<UserToReturn> GetCurrentUser(ClaimsPrincipal claimsPrincipal);
+
+        Task<ChangePasswordToReturn> ChangePasswordAsync(ClaimsPrincipal claims, ChangePasswordDto changePasswordDto);
 
 
     }

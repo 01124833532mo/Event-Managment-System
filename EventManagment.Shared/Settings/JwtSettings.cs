@@ -1,4 +1,4 @@
-﻿namespace EventManagment.Shared.Models.Auth
+﻿namespace EventManagment.Shared.Settings
 {
     public class JwtSettings
     {

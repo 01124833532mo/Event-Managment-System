@@ -16,6 +16,10 @@ namespace EventManagment.Core.Domain._Identity
 
         public required string FullName { get; set; }
         public Types Types { get; set; }
+        public int? ResetCode { get; set; }
+        public DateTime? ResetCodeExpiry { get; set; }
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+
 
     }
 }
