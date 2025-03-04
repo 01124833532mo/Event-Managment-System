@@ -1,4 +1,4 @@
-﻿using EventManagment.Shared.Models.Auth;
+﻿using EventManagment.Shared.Settings;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +16,8 @@ namespace EventManagment.Shared
                 .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+
+            services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
 
             return services;
         }

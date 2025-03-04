@@ -1,13 +1,10 @@
 ﻿using EventManagment.Core.Application.Abstraction;
 using EventManagment.Core.Application.Abstraction.Services.Auth;
+using EventManagment.Core.Application.Abstraction.Services.Emails;
 using EventManagment.Core.Application.Services.Auth;
+using EventManagment.Core.Application.Services.Emails;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EventManagment.Core.Application
 {
@@ -17,10 +14,11 @@ namespace EventManagment.Core.Application
         {
             services.AddScoped(typeof(IServiceManager), typeof(ServiceManager));
             services.AddScoped(typeof(IAuthService), typeof(AuthService));
+            services.AddTransient(typeof(IEmailService), typeof(EmailService));
 
             services.AddScoped(typeof(Func<IAuthService>), (serviceprovider) =>
             {
-                return ()=> serviceprovider.GetRequiredService<IAuthService>();
+                return () => serviceprovider.GetRequiredService<IAuthService>();
 
             });
 
