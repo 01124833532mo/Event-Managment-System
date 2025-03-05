@@ -4,6 +4,7 @@ using EventManagment.Infrastructure.Persistence._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 {
     [DbContext(typeof(EventManagmentDbContext))]
-    partial class EventManagmentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250305041052_AddTablesOfData")]
+    partial class AddTablesOfData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

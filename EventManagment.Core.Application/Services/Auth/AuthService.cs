@@ -1,6 +1,7 @@
 ﻿using EventManagment.Core.Application.Abstraction.Services.Auth;
 using EventManagment.Core.Application.Abstraction.Services.Emails;
 using EventManagment.Core.Domain._Identity;
+using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Shared.Errors.Models;
 using EventManagment.Shared.Models._Common.Emails;
 using EventManagment.Shared.Models.Auth;

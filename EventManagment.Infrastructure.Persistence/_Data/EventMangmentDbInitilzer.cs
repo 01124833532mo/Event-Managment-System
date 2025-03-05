@@ -1,5 +1,6 @@
 ﻿using EventManagment.Core.Domain._Identity;
 using EventManagment.Core.Domain.Contracts.Persestence.DbInitializers;
+using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
