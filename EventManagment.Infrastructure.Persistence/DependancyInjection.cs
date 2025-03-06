@@ -1,5 +1,7 @@
-﻿using EventManagment.Core.Domain.Contracts.Persestence.DbInitializers;
+﻿using EventManagment.Core.Domain.Contracts.Persestence;
+using EventManagment.Core.Domain.Contracts.Persestence.DbInitializers;
 using EventManagment.Infrastructure.Persistence._Data;
+using EventManagment.Infrastructure.Persistence.Repositories.Generic_Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,7 @@ namespace EventManagment.Infrastructure.Persistence
 
             });
             services.AddScoped(typeof(IEventManagmentDbInitializer), typeof(EventMangmentDbInitilzer));
+            services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
             return services;
         }
     }
