@@ -20,6 +20,7 @@ namespace EventManagment.Infrastructure.Persistence
             });
             services.AddScoped(typeof(IEventManagmentDbInitializer), typeof(EventMangmentDbInitilzer));
             services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
+            services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork.UnitOfWork));
             return services;
         }
     }
