@@ -32,7 +32,8 @@ builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddSharedDependency(builder.Configuration);
-
+builder.Services.RegesteredPresestantLayer();
+builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 await app.InitializerEventManagmentContextAsync();
 app.UseMiddleware<ExeptionHandlerMiddleware>();
