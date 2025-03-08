@@ -9,5 +9,8 @@ namespace EventManagment.Core.Application.Abstraction.Services.Events
 
         public Task<Response<EventToreturn>> UpdateEvent(int id, EventDto eventDto);
 
+        Task<Response<string>> DeleteEvent(int id);
+
+
     }
 }

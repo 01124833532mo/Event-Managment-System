@@ -109,5 +109,23 @@ namespace EventManagment.Core.Application.Services.Events
             // Return the updated event
             return Success(mappedResult);
         }
+
+        public async Task<Response<string>> DeleteEvent(int id)
+        {
+            var repo = _unitOfWork.GetRepository<Event, int>();
+            var Event = await repo.GetAsync(id);
+
+            if (Event is null) return NotFound<string>(id, "Not Event With This Id:"); ;
+
+            repo.Delete(Event);
+
+            var result = await _unitOfWork.CompleteAsync() > 0;
+
+            if (result is true) return Deleted<string>();
+
+            else
+                return BadRequest<string>("Operation Faild");
+
+        }
     }
 }
