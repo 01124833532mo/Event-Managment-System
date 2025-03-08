@@ -16,5 +16,13 @@ namespace EventManagment.Apis.Controller.Controllers.Events
             return NewResult(result);
 
         }
+
+        [HttpPut("UpdateEvent/{id}")]
+        public async Task<ActionResult> UpdateEvent([FromRoute] int id, [FromBody] EventDto eventDto)
+        {
+            var result = await serviceManager.EventServices.UpdateEvent(id, eventDto);
+            return NewResult(result);
+
+        }
     }
 }

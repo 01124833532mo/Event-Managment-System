@@ -2,6 +2,7 @@
 {
     public class EventToreturn
     {
+        public int Id { get; set; }
         public required string Title { get; set; }
         public required string Description { get; set; }
         public DateTime Data { get; set; }
@@ -14,5 +15,14 @@
 
 
         public string? CategoryName { get; set; }
+
+        public string CreatedBy { get; set; } = null!;
+
+        public DateTime CreatedOn { get; set; }
+
+        public string LastModifiedBy { get; set; } = null!;
+
+
+        public DateTime LastModifiedOn { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace EventManagment.Core.Application.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<EventDto, Event>();
+            CreateMap<EventDto, Event>().ReverseMap();
 
             CreateMap<Event, EventToreturn>()
                .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category.Name))

@@ -45,7 +45,7 @@ namespace EventManagment.Core.Application.Services.Events
             foreach (var attendee in allattendees)
             {
                 var emailSubject = "New Event Created";
-                var emailMessage = $"Dear {attendee.FullName},\n\nA new event '{mappedresult.CategoryName}' has been created Do You Want To Register For This Event?.\n\nEvent Date: {mappedresult.Data}\n\nThank you!";
+                var emailMessage = $"Dear {attendee.FullName},\n\nA new event '{mappedresult.Title}' has been created Do You Want To Register For This Event?.\n\nEvent Date: {mappedresult.Data}\n\nThank you!";
                 var email = new Email()
                 {
                     Subject = emailSubject,
@@ -59,6 +59,55 @@ namespace EventManagment.Core.Application.Services.Events
 
 
 
+        }
+
+        public async Task<Response<EventToreturn>> UpdateEvent(int id, EventDto eventDto)
+        {
+
+            var existingEvent = await _unitOfWork.GetRepository<Event, int>().GetAsync(id);
+            if (existingEvent == null)
+                return NotFound<EventToreturn>(id, "Event not found with this ID");
+
+            var checkCategoryExist = await _unitOfWork.GetRepository<Category, int>().GetAsync(eventDto.Categoryid);
+            if (checkCategoryExist == null)
+                return NotFound<EventToreturn>(eventDto.Categoryid, "Category does not exist with this ID");
+
+            var updatedEvent = _mapper.Map(eventDto, existingEvent);
+
+            _unitOfWork.GetRepository<Event, int>().Update(existingEvent);
+
+
+            var complete = await _unitOfWork.CompleteAsync() > 0;
+            if (!complete)
+                return BadRequest<EventToreturn>("Error occurred while updating the event");
+
+            var mappedResult = _mapper.Map<EventToreturn>(updatedEvent);
+
+            var organizer = await userManager.FindByIdAsync(mappedResult.OrganizerId);
+            if (organizer == null)
+            {
+                throw new BadRequestExeption("organizer not found");
+            }
+
+            mappedResult.OrganizerName = organizer.FullName;
+
+            var allattendees = await userManager.GetUsersInRoleAsync(Roles.Attendee);
+            foreach (var attendee in allattendees)
+            {
+                var emailSubject = " Event Updated";
+                var emailMessage = $"Dear {attendee.FullName},\n\nA  event Is Updated '{mappedResult.Title}' has been Updated Be Carfule For This Update.\n\nEvent Date: {mappedResult.Data}\n\nThank you!";
+                var email = new Email()
+                {
+                    Subject = emailSubject,
+                    Body = emailMessage,
+                    To = attendee.Email!
+                };
+                await emailService.SendEmail(email);
+            }
+
+
+            // Return the updated event
+            return Success(mappedResult);
         }
     }
 }

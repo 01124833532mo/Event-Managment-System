@@ -7,5 +7,7 @@ namespace EventManagment.Core.Application.Abstraction.Services.Events
     {
         public Task<Response<EventToreturn>> CreateEvent(EventDto eventDto);
 
+        public Task<Response<EventToreturn>> UpdateEvent(int id, EventDto eventDto);
+
     }
 }
