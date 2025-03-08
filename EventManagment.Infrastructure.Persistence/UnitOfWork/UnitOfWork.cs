@@ -41,3 +41,4 @@ namespace EventManagment.Infrastructure.Persistence.UnitOfWork
 
         }
     }
+}

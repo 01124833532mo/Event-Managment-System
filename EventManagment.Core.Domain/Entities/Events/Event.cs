@@ -31,7 +31,7 @@ namespace EventManagment.Core.Domain.Entities.Events
         public DateTime Data { get; set; }
         public required string Location { get; set; }
         public required int MaxAttendees { get; set; }
-        public EventStatus Status { get; set; }
+        public EventStatus Status { get; set; } = EventStatus.scheduled;
 
         public string? OrganizerId { get; set; }
         public virtual ApplicationUser Organizer { get; set; }
