@@ -1,5 +1,7 @@
 ﻿using EventManagment.Core.Domain.Common;
 using EventManagment.Core.Domain.Contracts.Persestence;
+using EventManagment.Core.Domain.Contracts.Specifications;
+using EventManagment.Infrastructure.Persistence._Common;
 using EventManagment.Infrastructure.Persistence._Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +18,21 @@ namespace EventManagment.Infrastructure.Persistence.Repositories.Generic_Reposit
             _dbContext = dbContext;
         }
 
+
+        public async Task<IEnumerable<TEntity>> GetAllWithSpecAsync(ISpecification<TEntity, TKey> Spec, bool WithTraching = false)
+        {
+            return WithTraching ? await ApplySpecifications(Spec).ToListAsync() : await ApplySpecifications(Spec).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<TEntity?> GetWithSpecAsync(ISpecification<TEntity, TKey> spec)
+        {
+            return await ApplySpecifications(spec).FirstOrDefaultAsync();
+        }
+
+        public async Task<int> GetCountAsync(ISpecification<TEntity, TKey> spec)
+        {
+            return await ApplySpecifications(spec).CountAsync();
+        }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync(bool WithTraching = false)
         {
@@ -53,6 +70,10 @@ namespace EventManagment.Infrastructure.Persistence.Repositories.Generic_Reposit
         }
 
 
+        private IQueryable<TEntity> ApplySpecifications(ISpecification<TEntity, TKey> Spec)
+        {
+            return SpecificationEvaluator<TEntity, TKey>.GetQuery(_dbContext.Set<TEntity>(), Spec);
+        }
 
     }
 }

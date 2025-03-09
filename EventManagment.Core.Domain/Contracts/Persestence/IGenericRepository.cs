@@ -1,4 +1,5 @@
 ﻿using EventManagment.Core.Domain.Common;
+using EventManagment.Core.Domain.Contracts.Specifications;
 
 namespace EventManagment.Core.Domain.Contracts.Persestence
 {
@@ -9,8 +10,11 @@ namespace EventManagment.Core.Domain.Contracts.Persestence
 
         Task<TEntity?> GetAsync(TKey id);
 
+        Task<IEnumerable<TEntity>> GetAllWithSpecAsync(ISpecification<TEntity, TKey> Spec, bool WithTraching = false);
 
+        Task<TEntity?> GetWithSpecAsync(ISpecification<TEntity, TKey> spec);
 
+        Task<int> GetCountAsync(ISpecification<TEntity, TKey> spec);
 
 
         Task AddAsync(TEntity entity);
