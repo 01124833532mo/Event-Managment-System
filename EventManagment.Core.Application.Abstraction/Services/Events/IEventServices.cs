@@ -1,4 +1,5 @@
 ﻿using EventManagment.Core.Application.Abstraction.Bases;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Events;
 
 namespace EventManagment.Core.Application.Abstraction.Services.Events
@@ -12,7 +13,9 @@ namespace EventManagment.Core.Application.Abstraction.Services.Events
         Task<Response<string>> DeleteEvent(int id);
 
 
-        Task<Response<EventToreturn>> GetEventById(int id, CancellationToken cancellationToken);
+        Task<Response<EventToreturn>> GetEventByIdAsync(int id, CancellationToken cancellationToken);
+
+        Task<Pagination<EventToreturn>> GetAllEventsAsynce(SpecParams specParams, CancellationToken cancellationToken);
 
     }
 }

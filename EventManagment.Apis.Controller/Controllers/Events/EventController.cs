@@ -1,5 +1,6 @@
 ﻿using EventManagment.Apis.Controller.Controllers.Base;
 using EventManagment.Core.Application.Abstraction;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,9 +37,15 @@ namespace EventManagment.Apis.Controller.Controllers.Events
         [HttpGet("GetEventById/{id}")]
         public async Task<ActionResult> GetEventById([FromRoute] int id, CancellationToken cancellationToken)
         {
-            var result = await serviceManager.EventServices.GetEventById(id, cancellationToken);
+            var result = await serviceManager.EventServices.GetEventByIdAsync(id, cancellationToken);
             return NewResult(result);
 
+        }
+        [HttpGet("GetAllEvents")]
+        public async Task<ActionResult<Pagination<EventToreturn>>> GetProducts([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
+        {
+            var products = await serviceManager.EventServices.GetAllEventsAsynce(specParams, cancellationToken);
+            return Ok(products);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EventManagment.Core.Application.Abstraction.Bases;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Core.Application.Abstraction.Services.Emails;
 using EventManagment.Core.Application.Abstraction.Services.Events;
 using EventManagment.Core.Domain.Contracts.Persestence;
@@ -19,7 +20,7 @@ namespace EventManagment.Core.Application.Services.Events
     public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper, UserManager<ApplicationUser> userManager, IEmailService emailService, ILogger<EventService> logger) : ResponseHandler, IEventServices
     {
 
-        public async Task<Response<EventToreturn>> GetEventById(int id, CancellationToken cancellationToken = default)
+        public async Task<Response<EventToreturn>> GetEventByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var repo = _unitOfWork.GetRepository<Event, int>();
             logger.LogInformation("Get Event By Id Service Called");
@@ -38,8 +39,23 @@ namespace EventManagment.Core.Application.Services.Events
             return Success(mappedEvent, 1);
 
 
+
+
         }
 
+        public async Task<Pagination<EventToreturn>> GetAllEventsAsynce(SpecParams specParams, CancellationToken cancellationToken)
+        {
+            var spec = new EvenstWithCategoryAndOrgnizerSpecification(specParams.Sort, specParams.CategoryId, specParams.Orgnizerid, specParams.PageSize, specParams.PageIndex, specParams.Search);
+
+
+            var Events = await _unitOfWork.GetRepository<Event, int>().GetAllWithSpecAsync(spec);
+
+            var data = _mapper.Map<IEnumerable<EventToreturn>>(Events);
+            var countSpec = new EventWithFilterationForCountSpecifications(specParams.Orgnizerid, specParams.CategoryId, specParams.Search);
+            var count = await _unitOfWork.GetRepository<Event, int>().GetCountAsync(countSpec, cancellationToken);
+
+            return new Pagination<EventToreturn>(specParams.PageIndex, specParams.PageSize, count) { Data = data };
+        }
         public async Task<Response<EventToreturn>> CreateEvent(EventDto eventDto)
         {
             var checkcategoryexsist = await _unitOfWork.GetRepository<Category, int>().GetAsync(eventDto.Categoryid);
@@ -152,6 +168,8 @@ namespace EventManagment.Core.Application.Services.Events
                 return BadRequest<string>("Operation Faild");
 
         }
+
+
 
 
     }

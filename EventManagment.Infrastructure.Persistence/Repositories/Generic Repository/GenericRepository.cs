@@ -19,9 +19,9 @@ namespace EventManagment.Infrastructure.Persistence.Repositories.Generic_Reposit
         }
 
 
-        public async Task<IEnumerable<TEntity>> GetAllWithSpecAsync(ISpecification<TEntity, TKey> Spec, bool WithTraching = false)
+        public async Task<IEnumerable<TEntity>> GetAllWithSpecAsync(ISpecification<TEntity, TKey> Spec, bool WithTraching = false, CancellationToken cancellationToken = default)
         {
-            return WithTraching ? await ApplySpecifications(Spec).ToListAsync() : await ApplySpecifications(Spec).AsNoTracking().ToListAsync();
+            return WithTraching ? await ApplySpecifications(Spec).ToListAsync(cancellationToken) : await ApplySpecifications(Spec).AsNoTracking().ToListAsync(cancellationToken);
         }
 
         public async Task<TEntity?> GetWithSpecAsync(ISpecification<TEntity, TKey> spec, CancellationToken cancellationToken)
