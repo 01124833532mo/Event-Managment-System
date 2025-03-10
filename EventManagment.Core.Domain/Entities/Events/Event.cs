@@ -27,6 +27,7 @@ namespace EventManagment.Core.Domain.Entities.Events
         //+ Category: Category
 
         public required string Title { get; set; }
+        public required string NormalizedTitle { get; set; }
         public required string Description { get; set; }
         public DateTime Data { get; set; }
         public required string Location { get; set; }
