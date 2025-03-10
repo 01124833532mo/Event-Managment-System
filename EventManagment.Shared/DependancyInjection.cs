@@ -1,6 +1,7 @@
 ﻿using EventManagment.Shared.Settings;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Hangfire;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -18,6 +19,9 @@ namespace EventManagment.Shared
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
+
+            services.AddHangfire(h => h.UseSqlServerStorage(configuration.GetConnectionString("EventManagmentContext")))
+                    .AddHangfireServer();
 
             return services;
         }

@@ -4,6 +4,7 @@ using EventManagment.Core.Application;
 using EventManagment.Infrastructure.Persistence;
 using EventManagment.Shared;
 using EventManagment.Shared.Errors.Response;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +51,8 @@ app.UseHttpsRedirection();
 
 app.UseStatusCodePagesWithReExecute("/Errors/{0}");
 app.UseStaticFiles();
+
+app.MapHangfireDashboard("/Dashbord");
 
 app.UseAuthorization();
 

@@ -12,6 +12,7 @@ using EventManagment.Shared.Errors.Models;
 using EventManagment.Shared.Models._Common.Emails;
 using EventManagment.Shared.Models.Events;
 using EventManagment.Shared.Models.Roles;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
@@ -92,7 +93,9 @@ namespace EventManagment.Core.Application.Services.Events
                     Body = emailMessage,
                     To = attendee.Email!
                 };
-                await emailService.SendEmail(email);
+                //await emailService.SendEmail(email);
+                logger.LogInformation("Email Send To Attendees");
+                BackgroundJob.Enqueue(() => emailService.SendEmail(email));
             }
 
             return Created(mappedresult);
@@ -143,7 +146,8 @@ namespace EventManagment.Core.Application.Services.Events
                     Body = emailMessage,
                     To = attendee.Email!
                 };
-                await emailService.SendEmail(email);
+                logger.LogInformation("Email Send To Attendees");
+                BackgroundJob.Enqueue(() => emailService.SendEmail(email));
             }
 
 
