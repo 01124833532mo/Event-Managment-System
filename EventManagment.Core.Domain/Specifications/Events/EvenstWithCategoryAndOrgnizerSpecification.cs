@@ -9,8 +9,8 @@ namespace EventManagment.Core.Domain.Specifications.Events
 
 
                p =>
-               //(string.IsNullOrEmpty(search) || p.NormalizedName.Contains(search))
-               //&&
+               (string.IsNullOrEmpty(search) || p.NormalizedTitle.Contains(search))
+               &&
                (!categoryId.HasValue || p.Categoryid == categoryId.Value)
                          &&
                      (string.IsNullOrEmpty(orgnizerid) || p.OrganizerId == orgnizerid)

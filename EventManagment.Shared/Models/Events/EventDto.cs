@@ -3,6 +3,8 @@
     public class EventDto
     {
         public required string Title { get; set; }
+
+        public string NormalizedTitle { get { return Title.ToUpper(); } }
         public required string Description { get; set; }
         public DateTime Data { get; set; }
         public required string Location { get; set; }
