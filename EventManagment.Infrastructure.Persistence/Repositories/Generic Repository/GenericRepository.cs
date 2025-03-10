@@ -24,14 +24,14 @@ namespace EventManagment.Infrastructure.Persistence.Repositories.Generic_Reposit
             return WithTraching ? await ApplySpecifications(Spec).ToListAsync() : await ApplySpecifications(Spec).AsNoTracking().ToListAsync();
         }
 
-        public async Task<TEntity?> GetWithSpecAsync(ISpecification<TEntity, TKey> spec)
+        public async Task<TEntity?> GetWithSpecAsync(ISpecification<TEntity, TKey> spec, CancellationToken cancellationToken)
         {
-            return await ApplySpecifications(spec).FirstOrDefaultAsync();
+            return await ApplySpecifications(spec).FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<int> GetCountAsync(ISpecification<TEntity, TKey> spec)
+        public async Task<int> GetCountAsync(ISpecification<TEntity, TKey> spec, CancellationToken cancellationToken)
         {
-            return await ApplySpecifications(spec).CountAsync();
+            return await ApplySpecifications(spec).CountAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync(bool WithTraching = false)

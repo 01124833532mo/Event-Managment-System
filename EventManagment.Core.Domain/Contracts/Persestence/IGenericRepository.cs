@@ -12,9 +12,9 @@ namespace EventManagment.Core.Domain.Contracts.Persestence
 
         Task<IEnumerable<TEntity>> GetAllWithSpecAsync(ISpecification<TEntity, TKey> Spec, bool WithTraching = false);
 
-        Task<TEntity?> GetWithSpecAsync(ISpecification<TEntity, TKey> spec);
+        Task<TEntity?> GetWithSpecAsync(ISpecification<TEntity, TKey> spec, CancellationToken cancellationToken);
 
-        Task<int> GetCountAsync(ISpecification<TEntity, TKey> spec);
+        Task<int> GetCountAsync(ISpecification<TEntity, TKey> spec, CancellationToken cancellationToken);
 
 
         Task AddAsync(TEntity entity);

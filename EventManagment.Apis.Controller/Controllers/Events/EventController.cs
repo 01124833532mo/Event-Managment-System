@@ -32,5 +32,13 @@ namespace EventManagment.Apis.Controller.Controllers.Events
             return NewResult(result);
 
         }
+
+        [HttpGet("GetEventById/{id}")]
+        public async Task<ActionResult> GetEventById([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.EventServices.GetEventById(id, cancellationToken);
+            return NewResult(result);
+
+        }
     }
 }

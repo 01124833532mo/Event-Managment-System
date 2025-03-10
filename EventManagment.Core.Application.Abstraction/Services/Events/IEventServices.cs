@@ -12,5 +12,7 @@ namespace EventManagment.Core.Application.Abstraction.Services.Events
         Task<Response<string>> DeleteEvent(int id);
 
 
+        Task<Response<EventToreturn>> GetEventById(int id, CancellationToken cancellationToken);
+
     }
 }

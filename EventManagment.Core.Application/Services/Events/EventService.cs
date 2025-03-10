@@ -6,16 +6,40 @@ using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Core.Domain.Entities.Categories;
 using EventManagment.Core.Domain.Entities.Events;
+using EventManagment.Core.Domain.Specifications.Events;
 using EventManagment.Shared.Errors.Models;
 using EventManagment.Shared.Models._Common.Emails;
 using EventManagment.Shared.Models.Events;
 using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace EventManagment.Core.Application.Services.Events
 {
-    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper, UserManager<ApplicationUser> userManager, IEmailService emailService) : ResponseHandler, IEventServices
+    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper, UserManager<ApplicationUser> userManager, IEmailService emailService, ILogger<EventService> logger) : ResponseHandler, IEventServices
     {
+
+        public async Task<Response<EventToreturn>> GetEventById(int id, CancellationToken cancellationToken = default)
+        {
+            var repo = _unitOfWork.GetRepository<Event, int>();
+            logger.LogInformation("Get Event By Id Service Called");
+            var spec = new EventWithCategoryAndOrgnizerSpecification(id);
+
+            var Event = await repo.GetWithSpecAsync(spec, cancellationToken);
+            if (Event is null)
+            {
+                logger.LogWarning("Event Not Found With This Id");
+                return NotFound<EventToreturn>(id, "Event Not Found With This Id");
+            };
+            var mappedEvent = _mapper.Map<EventToreturn>(Event);
+            logger.LogInformation("Event Found And Mapped");
+
+
+            return Success(mappedEvent, 1);
+
+
+        }
+
         public async Task<Response<EventToreturn>> CreateEvent(EventDto eventDto)
         {
             var checkcategoryexsist = await _unitOfWork.GetRepository<Category, int>().GetAsync(eventDto.Categoryid);
@@ -60,6 +84,7 @@ namespace EventManagment.Core.Application.Services.Events
 
 
         }
+
 
         public async Task<Response<EventToreturn>> UpdateEvent(int id, EventDto eventDto)
         {
@@ -127,5 +152,7 @@ namespace EventManagment.Core.Application.Services.Events
                 return BadRequest<string>("Operation Faild");
 
         }
+
+
     }
 }
