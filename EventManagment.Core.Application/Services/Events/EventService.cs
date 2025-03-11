@@ -7,6 +7,7 @@ using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Core.Domain.Entities.Categories;
 using EventManagment.Core.Domain.Entities.Events;
+using EventManagment.Core.Domain.Enums;
 using EventManagment.Core.Domain.Specifications.Events;
 using EventManagment.Shared.Errors.Models;
 using EventManagment.Shared.Models._Common.Emails;
@@ -82,21 +83,7 @@ namespace EventManagment.Core.Application.Services.Events
             mappedresult.OrganizerName = FullNameUser.FullName;
 
 
-            var allattendees = await userManager.GetUsersInRoleAsync(Roles.Attendee);
-            foreach (var attendee in allattendees)
-            {
-                var emailSubject = "New Event Created";
-                var emailMessage = $"Dear {attendee.FullName},\n\nA new event '{mappedresult.Title}' has been created Do You Want To Register For This Event?.\n\nEvent Date: {mappedresult.Data}\n\nThank you!";
-                var email = new Email()
-                {
-                    Subject = emailSubject,
-                    Body = emailMessage,
-                    To = attendee.Email!
-                };
-                //await emailService.SendEmail(email);
-                logger.LogInformation("Email Send To Attendees");
-                BackgroundJob.Enqueue(() => emailService.SendEmail(email));
-            }
+            await SendEventEmailsToAttendees(userManager, logger, emailService, mappedresult);
 
             return Created(mappedresult);
 
@@ -135,20 +122,7 @@ namespace EventManagment.Core.Application.Services.Events
 
             mappedResult.OrganizerName = organizer.FullName;
 
-            var allattendees = await userManager.GetUsersInRoleAsync(Roles.Attendee);
-            foreach (var attendee in allattendees)
-            {
-                var emailSubject = " Event Updated";
-                var emailMessage = $"Dear {attendee.FullName},\n\nA  event Is Updated '{mappedResult.Title}' has been Updated Be Carfule For This Update.\n\nEvent Date: {mappedResult.Data}\n\nThank you!";
-                var email = new Email()
-                {
-                    Subject = emailSubject,
-                    Body = emailMessage,
-                    To = attendee.Email!
-                };
-                logger.LogInformation("Email Send To Attendees");
-                BackgroundJob.Enqueue(() => emailService.SendEmail(email));
-            }
+            await SendEventEmailsToAttendees(userManager, logger, emailService, mappedResult, isUpdate: true);
 
 
             // Return the updated event
@@ -173,8 +147,71 @@ namespace EventManagment.Core.Application.Services.Events
 
         }
 
+        public async Task<Response<string>> CancelEvent(int id, CancellationToken cancellationToken = default)
+        {
+            logger.LogInformation("Cancel Event Service Called");
+
+            var repo = _unitOfWork.GetRepository<Event, int>();
+            var spec = new EventWithCategoryAndOrgnizerSpecification(id);
+            var Event = await repo.GetWithSpecAsync(spec, cancellationToken);
 
 
+            if (Event is null)
+            {
+                logger.LogWarning("Event Not Found With This Id");
+                return NotFound<string>(id, "Event Not Found With This Id");
+            };
 
+            Event.Status = EventStatus.canceled!;
+            var mappedResult = _mapper.Map<EventToreturn>(Event);
+            repo.Update(Event);
+            var result = await _unitOfWork.CompleteAsync() > 0;
+            if (result is true)
+            {
+                await SendEventEmailsToAttendees(userManager, logger, emailService, mappedResult, isCancelled: true);
+
+                logger.LogInformation("Event Canceled Successfully");
+                return Success("Event Canceled Successfully");
+            }
+            else
+            {
+                logger.LogWarning("Error Occure While Canceling Event");
+                return BadRequest<string>("Error Occure While Canceling Event");
+
+            }
+        }
+
+        private async Task SendEventEmailsToAttendees(UserManager<ApplicationUser> userManager,
+     ILogger logger,
+     IEmailService emailService,
+     EventToreturn mappedResult,
+     bool isUpdate = false,
+     bool isCancelled = false)
+        {
+            var allAttendees = await userManager.GetUsersInRoleAsync(Roles.Attendee);
+
+            foreach (var attendee in allAttendees)
+            {
+                var emailSubject = isUpdate ? "Event Updated" :
+                                 isCancelled ? "Event Cancelled" :
+                                 "New Event Created";
+
+                var emailMessage = isUpdate
+                    ? $"Dear {attendee.FullName},\n\nA event Is Updated '{mappedResult.Title}' has been Updated Be Carfule For This Update.\n\nEvent Date: {mappedResult.Data}\n\nThank you!"
+                    : isCancelled
+                        ? $"Dear {attendee.FullName},\n\nThe event '{mappedResult.Title}' has been cancelled.\n\nEvent Date: {mappedResult.Data}\n\nThank you!"
+                        : $"Dear {attendee.FullName},\n\nA new event '{mappedResult.Title}' has been created Do You Want To Register For This Event?.\n\nEvent Date: {mappedResult.Data}\n\nThank you!";
+
+                var email = new Email()
+                {
+                    Subject = emailSubject,
+                    Body = emailMessage,
+                    To = attendee.Email!
+                };
+
+                logger.LogInformation("Email Send To Attendees");
+                BackgroundJob.Enqueue(() => emailService.SendEmail(email));
+            }
+        }
     }
 }

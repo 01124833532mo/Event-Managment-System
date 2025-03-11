@@ -10,5 +10,6 @@
         public required string Location { get; set; }
         public required int MaxAttendees { get; set; }
         public int Categoryid { get; set; }
+
     }
 }

@@ -27,6 +27,14 @@ namespace EventManagment.Apis.Controller.Controllers.Events
 
         }
 
+        [HttpPut("CancelEvent/{id}")]
+        public async Task<ActionResult> CancelEvent([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.EventServices.CancelEvent(id, cancellationToken);
+            return NewResult(result);
+
+        }
+
         [HttpDelete("DeleteEvent/{id}")]
         public async Task<ActionResult> DeleteEvent([FromRoute] int id)
         {

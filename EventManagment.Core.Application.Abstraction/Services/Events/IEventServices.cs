@@ -17,5 +17,7 @@ namespace EventManagment.Core.Application.Abstraction.Services.Events
 
         Task<Pagination<EventToreturn>> GetAllEventsAsynce(SpecParams specParams, CancellationToken cancellationToken);
 
+        Task<Response<string>> CancelEvent(int id, CancellationToken cancellationToken);
+
     }
 }
