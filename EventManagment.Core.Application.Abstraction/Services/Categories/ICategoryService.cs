@@ -7,5 +7,7 @@ namespace EventManagment.Core.Application.Abstraction.Services.Categories
     {
         public Task<Response<CategoryDto>> CreateCategory(CategoryDto eventDto, CancellationToken cancellationToken);
 
+        public Task<Response<CategoryDto>> GetCategoryAsync(int id, CancellationToken cancellationToken);
+
     }
 }

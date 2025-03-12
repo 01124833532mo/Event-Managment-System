@@ -37,5 +37,30 @@ namespace EventManagment.Core.Application.Services.Categories
 
 
         }
+
+        public async Task<Response<CategoryDto>> GetCategoryAsync(int id, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("Get Category By Id Service Called");
+
+
+
+            var repo = _unitOfWork.GetRepository<Category, int>();
+            var category = await repo.GetAsync(id);
+
+            if (category is null)
+            {
+                _logger.LogWarning("Category Not Found With This Id");
+                return NotFound<CategoryDto>(id, "Category Not Found With This Id");
+            }
+
+            var mappedCategory = _mapper.Map<CategoryDto>(category);
+            _logger.LogInformation("Category Found And Mapped");
+
+            return Success(mappedCategory, 1);
+
+
+
+
+        }
     }
 }

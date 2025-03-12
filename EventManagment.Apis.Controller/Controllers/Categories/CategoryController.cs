@@ -16,5 +16,13 @@ namespace EventManagment.Apis.Controller.Controllers.Categories
             return NewResult(result);
 
         }
+
+        [HttpGet("GetCategory/{id}")]
+        public async Task<ActionResult> GetCategory([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.CategoryService.GetCategoryAsync(id, cancellationToken);
+            return NewResult(result);
+
+        }
     }
 }
