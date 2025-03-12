@@ -1,5 +1,6 @@
 ﻿using EventManagment.Apis.Controller.Controllers.Base;
 using EventManagment.Core.Application.Abstraction;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Categories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,13 @@ namespace EventManagment.Apis.Controller.Controllers.Categories
             var result = await serviceManager.CategoryService.GetCategoryAsync(id, cancellationToken);
             return NewResult(result);
 
+        }
+
+        [HttpGet("GetAllCategories")]
+        public async Task<ActionResult<Pagination<CategoryDto>>> GetAllEvents([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
+        {
+            var products = await serviceManager.CategoryService.GetAllCategoriesAsynce(specParams, cancellationToken);
+            return Ok(products);
         }
     }
 }

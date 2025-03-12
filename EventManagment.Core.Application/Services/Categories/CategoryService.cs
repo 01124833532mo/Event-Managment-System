@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using EventManagment.Core.Application.Abstraction.Bases;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Core.Application.Abstraction.Services.Categories;
 using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities.Categories;
+using EventManagment.Core.Domain.Specifications.Categories;
 using EventManagment.Shared.Models.Categories;
 using Microsoft.Extensions.Logging;
 
@@ -35,6 +37,22 @@ namespace EventManagment.Core.Application.Services.Categories
 
 
 
+
+        }
+
+        public async Task<Pagination<CategoryDto>> GetAllCategoriesAsynce(SpecParams specParams, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("Get Categories Service Called");
+            var spec = new CategoriesSpecification(specParams.PageSize, specParams.PageIndex);
+
+            var repo = _unitOfWork.GetRepository<Category, int>();
+
+            var Categories = await repo.GetAllWithSpecAsync(spec);
+
+            var data = _mapper.Map<IEnumerable<CategoryDto>>(Categories);
+            var count = Categories.Count();
+
+            return new Pagination<CategoryDto>(specParams.PageIndex, specParams.PageSize, count) { Data = data };
 
         }
 
