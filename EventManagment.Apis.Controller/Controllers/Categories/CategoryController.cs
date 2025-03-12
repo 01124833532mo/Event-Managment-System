@@ -2,12 +2,13 @@
 using EventManagment.Core.Application.Abstraction;
 using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Categories;
+using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventManagment.Apis.Controller.Controllers.Categories
 {
-    [Authorize]
+    [Authorize(Roles = Roles.Organizer + "" + Roles.Admin)]
     public class CategoryController(IServiceManager serviceManager) : BaseApiController
     {
         [HttpPost("CreateCategory")]
@@ -17,7 +18,7 @@ namespace EventManagment.Apis.Controller.Controllers.Categories
             return NewResult(result);
 
         }
-
+        [AllowAnonymous]
         [HttpGet("GetCategory/{id}")]
         public async Task<ActionResult> GetCategory([FromRoute] int id, CancellationToken cancellationToken)
         {
@@ -26,6 +27,7 @@ namespace EventManagment.Apis.Controller.Controllers.Categories
 
         }
 
+        [AllowAnonymous]
         [HttpGet("GetAllCategories")]
         public async Task<ActionResult<Pagination<CategoryDto>>> GetAllEvents([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
         {
