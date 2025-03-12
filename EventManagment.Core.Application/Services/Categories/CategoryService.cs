@@ -2,16 +2,40 @@
 using EventManagment.Core.Application.Abstraction.Bases;
 using EventManagment.Core.Application.Abstraction.Services.Categories;
 using EventManagment.Core.Domain.Contracts.Persestence;
+using EventManagment.Core.Domain.Entities.Categories;
 using EventManagment.Shared.Models.Categories;
 using Microsoft.Extensions.Logging;
 
 namespace EventManagment.Core.Application.Services.Categories
 {
-    public class CategoryService(IUnitOfWork _unitOfWork, ILogger<CategoryService> _logger, IMapper _mapper) : ICategoryService
+    public class CategoryService(IUnitOfWork _unitOfWork, ILogger<CategoryService> _logger, IMapper _mapper) : ResponseHandler, ICategoryService
     {
-        public Task<Response<CategoryDto>> CreateEvent(CategoryDto eventDto)
+        public async Task<Response<CategoryDto>> CreateCategory(CategoryDto categoryDto, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Create Category Service Called");
+
+            var repo = _unitOfWork.GetRepository<Category, int>();
+
+            var category = _mapper.Map<Category>(categoryDto);
+
+
+            var addcategory = repo.AddAsync(category);
+            if (addcategory is null)
+            {
+                _logger.LogWarning("Category Not Created");
+                if (addcategory is null) return BadRequest<CategoryDto>("Operation No Successfuly");
+            }
+
+            var complete = await _unitOfWork.CompleteAsync() > 0;
+            if (!complete) return BadRequest<CategoryDto>("Error Occure While Creating Category");
+            var mappedresult = _mapper.Map<CategoryDto>(category);
+
+            return Created(mappedresult);
+
+
+
+
+
         }
     }
 }

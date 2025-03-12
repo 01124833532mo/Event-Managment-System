@@ -38,6 +38,11 @@ namespace EventManagment.Core.Application
 
             });
 
+            services.AddScoped(typeof(Func<ICategoryService>), (serviceprovider) =>
+            {
+                return () => serviceprovider.GetRequiredService<ICategoryService>();
+
+            });
             return services;
         }
 

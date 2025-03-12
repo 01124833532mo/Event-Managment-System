@@ -5,7 +5,7 @@ namespace EventManagment.Core.Application.Abstraction.Services.Categories
 {
     public interface ICategoryService
     {
-        public Task<Response<CategoryDto>> CreateEvent(CategoryDto eventDto);
+        public Task<Response<CategoryDto>> CreateCategory(CategoryDto eventDto, CancellationToken cancellationToken);
 
     }
 }
