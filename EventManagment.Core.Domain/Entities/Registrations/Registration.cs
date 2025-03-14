@@ -10,7 +10,10 @@ namespace EventManagment.Core.Domain.Entities.Registrations
     public class Registration : BaseAuditableEntity<int>, IBaseUserId
     {
         public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
+        public decimal ServicePrice { get; set; }
 
+        public string? PaymentIntentId { get; set; }
+        public string? ClientSecret { get; set; }
         public string AttendeeId { get; set; }
         public virtual ApplicationUser Attendee { get; set; }
 
