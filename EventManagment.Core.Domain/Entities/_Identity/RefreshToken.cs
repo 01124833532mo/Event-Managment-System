@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace EventManagment.Core.Domain._Identity
+namespace EventManagment.Core.Domain.Entities._Identity
 {
     [Owned]
 

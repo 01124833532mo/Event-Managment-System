@@ -1,6 +1,7 @@
 ﻿using EventManagment.Core.Application.Abstraction.Services.Auth;
 using EventManagment.Core.Application.Abstraction.Services.Emails;
 using EventManagment.Core.Domain._Identity;
+using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Shared.Errors.Models;
 using EventManagment.Shared.Models._Common.Emails;
 using EventManagment.Shared.Models.Auth;
@@ -8,6 +9,7 @@ using EventManagment.Shared.Models.Roles;
 using EventManagment.Shared.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -21,7 +23,7 @@ namespace EventManagment.Core.Application.Services.Auth
         , SignInManager<ApplicationUser> signInManager,
         RoleManager<IdentityRole> roleManager
         , IOptions<JwtSettings> jwtsettings,
-        IEmailService emailService) : IAuthService
+        IEmailService emailService, ILogger<AuthService> logger) : IAuthService
     {
         private readonly JwtSettings _jwtsettings = jwtsettings.Value;
 
@@ -92,7 +94,10 @@ namespace EventManagment.Core.Application.Services.Auth
         {
             var user = await userManager.FindByEmailAsync(loginDto.Email);
             if (user is null)
+            {
+                logger.LogWarning("Invalid Login Attempt For Email {Email}", loginDto.Email);
                 throw new UnAuthorizedExeption("Invalid Login");
+            }
 
             var result = await signInManager.CheckPasswordSignInAsync(user, loginDto.Password, lockoutOnFailure: true);
 
@@ -161,15 +166,15 @@ namespace EventManagment.Core.Application.Services.Auth
 
             if (!result.Succeeded) throw new ValidationExeption() { Errors = result.Errors.Select(p => p.Description) };
 
-            var refresktoken = GenerateRefreshToken();
+            //var refresktoken = GenerateRefreshToken();
 
-            user.RefreshTokens.Add(new RefreshToken()
-            {
-                Token = refresktoken.Token,
-                ExpireOn = refresktoken.ExpireOn
-            });
+            //user.RefreshTokens.Add(new RefreshToken()
+            //{
+            //    Token = refresktoken.Token,
+            //    ExpireOn = refresktoken.ExpireOn
+            //});
 
-            await userManager.UpdateAsync(user);
+            //await userManager.UpdateAsync(user);
 
 
 
@@ -188,8 +193,6 @@ namespace EventManagment.Core.Application.Services.Auth
                 Types = user.Types.ToString(),
                 Token = await GenerateTokenAsync(user),
 
-                RefreshToken = refresktoken.Token,
-                RefreshTokenExpirationDate = refresktoken.ExpireOn,
             };
 
             return response;

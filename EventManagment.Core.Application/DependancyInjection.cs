@@ -1,8 +1,15 @@
 ﻿using EventManagment.Core.Application.Abstraction;
 using EventManagment.Core.Application.Abstraction.Services.Auth;
+using EventManagment.Core.Application.Abstraction.Services.Categories;
 using EventManagment.Core.Application.Abstraction.Services.Emails;
+using EventManagment.Core.Application.Abstraction.Services.Events;
+using EventManagment.Core.Application.Abstraction.Services.Registrations;
+using EventManagment.Core.Application.Mapping;
 using EventManagment.Core.Application.Services.Auth;
+using EventManagment.Core.Application.Services.Categories;
 using EventManagment.Core.Application.Services.Emails;
+using EventManagment.Core.Application.Services.Events;
+using EventManagment.Core.Application.Services.Registrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +21,13 @@ namespace EventManagment.Core.Application
         {
             services.AddScoped(typeof(IServiceManager), typeof(ServiceManager));
             services.AddScoped(typeof(IAuthService), typeof(AuthService));
+            services.AddScoped(typeof(IEventServices), typeof(EventService));
+            services.AddScoped(typeof(ICategoryService), typeof(CategoryService));
+            services.AddScoped(typeof(IRegistrationService), typeof(RegistrationService));
             services.AddTransient(typeof(IEmailService), typeof(EmailService));
+
+
+            services.AddAutoMapper(typeof(MappingProfile));
 
             services.AddScoped(typeof(Func<IAuthService>), (serviceprovider) =>
             {
@@ -22,6 +35,23 @@ namespace EventManagment.Core.Application
 
             });
 
+            services.AddScoped(typeof(Func<IRegistrationService>), (serviceprovider) =>
+            {
+                return () => serviceprovider.GetRequiredService<IRegistrationService>();
+
+            });
+
+            services.AddScoped(typeof(Func<IEventServices>), (serviceprovider) =>
+            {
+                return () => serviceprovider.GetRequiredService<IEventServices>();
+
+            });
+
+            services.AddScoped(typeof(Func<ICategoryService>), (serviceprovider) =>
+            {
+                return () => serviceprovider.GetRequiredService<ICategoryService>();
+
+            });
             return services;
         }
 

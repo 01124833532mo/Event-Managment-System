@@ -1,4 +1,4 @@
-﻿using EventManagment.Core.Domain._Identity;
+﻿using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Infrastructure.Persistence._Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

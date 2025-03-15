@@ -1,7 +1,7 @@
 ﻿using EventManagment.Shared.Models.Auth;
 using FluentValidation;
 
-namespace EventManagment.Shared.Models.Validators
+namespace EventManagment.Shared.Models.Validators.Auth
 {
     public class RegesterValidator : AbstractValidator<RegisterDto>
     {

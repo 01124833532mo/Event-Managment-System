@@ -1,0 +1,27 @@
+﻿using EventManagment.Core.Domain.Common;
+using EventManagment.Core.Domain.Contracts.Specifications;
+
+namespace EventManagment.Core.Domain.Contracts.Persestence
+{
+    public interface IGenericRepository<TEntity, TKey>
+       where TEntity : BaseEntity<TKey> where TKey : IEquatable<TKey>
+    {
+        Task<IEnumerable<TEntity>> GetAllAsync(bool WithTraching = false);
+
+        Task<TEntity?> GetAsync(TKey id);
+
+        Task<IEnumerable<TEntity>> GetAllWithSpecAsync(ISpecification<TEntity, TKey> Spec, bool WithTraching = false, CancellationToken cancellationToken = default);
+
+        Task<TEntity?> GetWithSpecAsync(ISpecification<TEntity, TKey> spec, CancellationToken cancellationToken);
+
+        Task<int> GetCountAsync(ISpecification<TEntity, TKey> spec, CancellationToken cancellationToken);
+
+
+        Task AddAsync(TEntity entity);
+
+        void Update(TEntity entity);
+
+        void Delete(TEntity entity);
+
+    }
+}

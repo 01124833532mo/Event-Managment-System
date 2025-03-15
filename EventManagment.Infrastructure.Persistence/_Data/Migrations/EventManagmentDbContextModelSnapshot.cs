@@ -25,7 +25,195 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EventManagment.Core.Domain._Identity.ApplicationUser", b =>
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Categories.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories", (string)null);
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Events.Event", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("Categoryid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MaxAttendees")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NormalizedTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrganizerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Categoryid");
+
+                    b.HasIndex("OrganizerId");
+
+                    b.ToTable("Events", (string)null);
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Notifications.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AttendeeId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar");
+
+                    b.Property<int?>("eventid")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttendeeId");
+
+                    b.HasIndex("eventid");
+
+                    b.ToTable("Notifications", (string)null);
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Registrations.Registration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AttendeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ClientSecret")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Eventid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentIntentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ServicePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttendeeId");
+
+                    b.HasIndex("Eventid");
+
+                    b.ToTable("Registrations", (string)null);
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -238,9 +426,59 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("EventManagment.Core.Domain._Identity.ApplicationUser", b =>
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Events.Event", b =>
                 {
-                    b.OwnsMany("EventManagment.Core.Domain._Identity.RefreshToken", "RefreshTokens", b1 =>
+                    b.HasOne("EventManagment.Core.Domain.Entities.Categories.Category", "Category")
+                        .WithMany("Events")
+                        .HasForeignKey("Categoryid");
+
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", "Organizer")
+                        .WithMany("Events")
+                        .HasForeignKey("OrganizerId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Organizer");
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Notifications.Notification", b =>
+                {
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", "Attendee")
+                        .WithMany("Notifications")
+                        .HasForeignKey("AttendeeId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("EventManagment.Core.Domain.Entities.Events.Event", "Event")
+                        .WithMany("Notifications")
+                        .HasForeignKey("eventid");
+
+                    b.Navigation("Attendee");
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Registrations.Registration", b =>
+                {
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", "Attendee")
+                        .WithMany("Registrations")
+                        .HasForeignKey("AttendeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EventManagment.Core.Domain.Entities.Events.Event", "Event")
+                        .WithMany("Registrations")
+                        .HasForeignKey("Eventid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attendee");
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", b =>
+                {
+                    b.OwnsMany("EventManagment.Core.Domain.Entities._Identity.ApplicationUser.RefreshTokens#EventManagment.Core.Domain.Entities._Identity.RefreshToken", "RefreshTokens", b1 =>
                         {
                             b1.Property<string>("ApplicationUserId")
                                 .HasColumnType("nvarchar(450)");
@@ -266,7 +504,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                             b1.HasKey("ApplicationUserId", "Id");
 
-                            b1.ToTable("RefreshToken");
+                            b1.ToTable("RefreshToken", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicationUserId");
@@ -286,7 +524,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("EventManagment.Core.Domain._Identity.ApplicationUser", null)
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -295,7 +533,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("EventManagment.Core.Domain._Identity.ApplicationUser", null)
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -310,7 +548,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EventManagment.Core.Domain._Identity.ApplicationUser", null)
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -319,11 +557,32 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("EventManagment.Core.Domain._Identity.ApplicationUser", null)
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Categories.Category", b =>
+                {
+                    b.Navigation("Events");
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Events.Event", b =>
+                {
+                    b.Navigation("Notifications");
+
+                    b.Navigation("Registrations");
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", b =>
+                {
+                    b.Navigation("Events");
+
+                    b.Navigation("Notifications");
+
+                    b.Navigation("Registrations");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,8 +1,9 @@
 ﻿using EventManagment.Core.Domain._Identity;
+using EventManagment.Core.Domain.Entities._Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EventManagment.Infrastructure.Persistence._Data.Configuration
+namespace EventManagment.Infrastructure.Persistence._Data.Configuration.identity
 {
     public class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>
     {
