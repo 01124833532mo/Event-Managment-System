@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EventManagment.Core.Application.Abstraction.Bases;
 using EventManagment.Core.Application.Abstraction.Common;
+using EventManagment.Core.Application.Abstraction.Common.Contracts.Infrastracture;
 using EventManagment.Core.Application.Abstraction.Services.Registrations;
 using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities._Identity;
@@ -15,7 +16,11 @@ using System.Security.Claims;
 
 namespace EventManagment.Core.Application.Services.Registrations
 {
-    public class RegistrationService(IUnitOfWork _unitOfWork, IMapper _mapper, ILogger<RegistrationService> _logger, UserManager<ApplicationUser> userManager) : ResponseHandler, IRegistrationService
+    public class RegistrationService(IUnitOfWork _unitOfWork
+        , IMapper _mapper,
+        ILogger<RegistrationService> _logger,
+        UserManager<ApplicationUser> userManager,
+        IPaymentService paymentService) : ResponseHandler, IRegistrationService
     {
 
 
@@ -101,10 +106,14 @@ namespace EventManagment.Core.Application.Services.Registrations
             {
                 throw new BadRequestExeption("User not found");
             }
-            var registerToReturn = _mapper.Map<RegisterToReturn>(register);
-            registerToReturn.FullName = FullNameUser.FullName;
+            var regiserid = register.Id;
 
-            return Success(registerToReturn);
+            var result = await paymentService.CreateOrUpdatePaymentIntent(regiserid);
+
+            var returnedData = _mapper.Map<RegisterToReturn>(register);
+            returnedData.FullName = FullNameUser.FullName;
+
+            return Success(returnedData);
 
         }
 
