@@ -16,7 +16,9 @@ namespace EventManagment.Infrastructure.Persistence._Data
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
             base.OnModelCreating(builder);
+
             builder.ApplyConfigurationsFromAssembly(typeof(AssemblyInformation).Assembly);
         }
 

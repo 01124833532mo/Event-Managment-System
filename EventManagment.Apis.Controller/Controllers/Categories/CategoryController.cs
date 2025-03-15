@@ -2,13 +2,12 @@
 using EventManagment.Core.Application.Abstraction;
 using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Categories;
-using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventManagment.Apis.Controller.Controllers.Categories
 {
-    [Authorize(Roles = Roles.Organizer + "" + Roles.Admin)]
+    [Authorize]
     public class CategoryController(IServiceManager serviceManager) : BaseApiController
     {
         [HttpPost("CreateCategory")]
