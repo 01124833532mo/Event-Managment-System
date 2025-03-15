@@ -7,5 +7,7 @@ namespace EventManagment.Core.Application.Abstraction.Services.Registrations
     {
         Task<Response<RegisterToReturn>> CreateRegisterAsync(CreateRegisterDto createRegisterDto, CancellationToken cancellationToken);
 
+        Task<Response<RegisterToReturn>> GetRegistrationAsync(int id, CancellationToken cancellationToken);
+
     }
 }

@@ -65,8 +65,7 @@ namespace EventManagment.Core.Application.Services.Events
 
             var mappedevent = _mapper.Map<Event>(eventDto);
 
-            var addevent = _unitOfWork.GetRepository<Event, int>().AddAsync(mappedevent);
-            if (addevent is null) return BadRequest<EventToreturn>("Operation No Successfuly");
+            await _unitOfWork.GetRepository<Event, int>().AddAsync(mappedevent);
 
 
             var complete = await _unitOfWork.CompleteAsync() > 0;

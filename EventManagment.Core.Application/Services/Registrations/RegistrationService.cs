@@ -5,6 +5,7 @@ using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Core.Domain.Entities.Events;
 using EventManagment.Core.Domain.Entities.Registrations;
+using EventManagment.Core.Domain.Specifications.Registrations;
 using EventManagment.Shared.Errors.Models;
 using EventManagment.Shared.Models.Registrations;
 using Microsoft.AspNetCore.Identity;
@@ -16,11 +17,6 @@ namespace EventManagment.Core.Application.Services.Registrations
     {
         public async Task<Response<RegisterToReturn>> CreateRegisterAsync(CreateRegisterDto createRegisterDto, CancellationToken cancellationToken = default)
         {
-
-
-
-
-
             _logger.LogInformation("CreateRegisterAsync called");
 
             var checkcategoryexsist = await _unitOfWork.GetRepository<Event, int>().GetAsync(createRegisterDto.Eventid);
@@ -57,6 +53,25 @@ namespace EventManagment.Core.Application.Services.Registrations
 
             return Success(registerToReturn);
 
+        }
+
+        public async Task<Response<RegisterToReturn>> GetRegistrationAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var repo = _unitOfWork.GetRepository<Registration, int>();
+            _logger.LogInformation("Get Registration By Id Service Called");
+            var spec = new RegistrationWithEventAndCategorySpecification(id);
+
+            var registration = await repo.GetWithSpecAsync(spec, cancellationToken);
+            if (registration is null)
+            {
+                _logger.LogWarning("Registration Not Found With This Id");
+                return NotFound<RegisterToReturn>(id, "Registration Not Found With This Id");
+            };
+            var mappedRegister = _mapper.Map<RegisterToReturn>(registration);
+            _logger.LogInformation("Event Found And Mapped");
+
+
+            return Success(mappedRegister, 1);
         }
     }
 }

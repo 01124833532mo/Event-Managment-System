@@ -17,5 +17,17 @@ namespace EventManagment.Apis.Controller.Controllers.Registrations
 
         }
 
+        [AllowAnonymous]
+        [HttpGet("GetRegistrationById/{id}")]
+        public async Task<ActionResult> GetRegistrationById([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.RegistrationService.GetRegistrationAsync(id, cancellationToken);
+            return NewResult(result);
+
+        }
+
+
+
+
     }
 }

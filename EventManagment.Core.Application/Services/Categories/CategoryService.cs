@@ -21,12 +21,8 @@ namespace EventManagment.Core.Application.Services.Categories
             var category = _mapper.Map<Category>(categoryDto);
 
 
-            var addcategory = repo.AddAsync(category);
-            if (addcategory is null)
-            {
-                _logger.LogWarning("Category Not Created");
-                if (addcategory is null) return BadRequest<CategoryDto>("Operation No Successfuly");
-            }
+            await repo.AddAsync(category);
+
 
             var complete = await _unitOfWork.CompleteAsync() > 0;
             if (!complete) return BadRequest<CategoryDto>("Error Occure While Creating Category");
