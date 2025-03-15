@@ -11,6 +11,7 @@ using EventManagment.Shared.Errors.Models;
 using EventManagment.Shared.Models.Registrations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace EventManagment.Core.Application.Services.Registrations
 {
@@ -18,7 +19,7 @@ namespace EventManagment.Core.Application.Services.Registrations
     {
 
 
-        public async Task<Pagination<RegisterToReturn>> GetAllRegistrationsAsync(SpecParams specParams, CancellationToken cancellationToken)
+        public async Task<Pagination<RegisterToReturn>> GetAllRegistrationsAsync(SpecParams specParams, CancellationToken cancellationToken = default)
         {
             var spec = new RegistrationWithEventAndCategorySpecification(specParams.Sort, specParams.EventId, specParams.RegistrationId, specParams.PageSize, specParams.PageIndex);
 
@@ -30,6 +31,22 @@ namespace EventManagment.Core.Application.Services.Registrations
             var count = await _unitOfWork.GetRepository<Registration, int>().GetCountAsync(countSpec, cancellationToken);
 
             return new Pagination<RegisterToReturn>(specParams.PageIndex, specParams.PageSize, count) { Data = data };
+        }
+
+
+        public async Task<Pagination<RegisterToReturn>> GetAllRegistrationForSpecificUserAsync(SpecParams specParams, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken = default)
+        {
+            var spec = new RegistrationWithEventAndCategorySpecification(specParams.Sort, specParams.EventId, specParams.RegistrationId, specParams.PageSize, specParams.PageIndex);
+            var registrations = await _unitOfWork.GetRepository<Registration, int>().GetAllWithSpecAsync(spec);
+
+            var attendeeid = claimsPrincipal.FindFirstValue(ClaimTypes.PrimarySid);
+            var specificregistration = registrations.Where(p => p.AttendeeId.Equals(attendeeid)).ToList();
+            var data = _mapper.Map<IEnumerable<RegisterToReturn>>(specificregistration);
+
+            var count = specificregistration.Count;
+
+            return new Pagination<RegisterToReturn>(specParams.PageIndex, specParams.PageSize, count) { Data = data };
+
         }
 
         public async Task<Response<RegisterToReturn>> GetRegistrationAsync(int id, CancellationToken cancellationToken = default)

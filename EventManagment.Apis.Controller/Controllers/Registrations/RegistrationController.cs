@@ -29,13 +29,18 @@ namespace EventManagment.Apis.Controller.Controllers.Registrations
         }
 
         [Authorize(Roles = Roles.Admin)]
-        [HttpGet("GetAllEvents-For-Admin")]
+        [HttpGet("GetAllRegistrations-For-Admin")]
         public async Task<ActionResult<Pagination<RegisterToReturn>>> GetAllRegistration([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
         {
             var products = await serviceManager.RegistrationService.GetAllRegistrationsAsync(specParams, cancellationToken);
             return Ok(products);
         }
-
+        [HttpGet("GetAll-Registration-For-Specificg-Attendd")]
+        public async Task<ActionResult<Pagination<RegisterToReturn>>> GetAllRegistrationForSpecificgAttendd([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
+        {
+            var products = await serviceManager.RegistrationService.GetAllRegistrationForSpecificUserAsync(specParams, User, cancellationToken);
+            return Ok(products);
+        }
 
     }
 }
