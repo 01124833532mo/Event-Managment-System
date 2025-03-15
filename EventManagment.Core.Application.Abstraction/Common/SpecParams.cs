@@ -5,6 +5,8 @@
         public string? Sort { get; set; }
         public string? Orgnizerid { get; set; }
         public int? CategoryId { get; set; }
+        public int? RegistrationId { get; set; }
+        public int? EventId { get; set; }
 
 
         private string? search;

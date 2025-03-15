@@ -1,4 +1,5 @@
 ﻿using EventManagment.Core.Application.Abstraction.Bases;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Registrations;
 
 namespace EventManagment.Core.Application.Abstraction.Services.Registrations
@@ -8,6 +9,9 @@ namespace EventManagment.Core.Application.Abstraction.Services.Registrations
         Task<Response<RegisterToReturn>> CreateRegisterAsync(CreateRegisterDto createRegisterDto, CancellationToken cancellationToken);
 
         Task<Response<RegisterToReturn>> GetRegistrationAsync(int id, CancellationToken cancellationToken);
+
+        Task<Pagination<RegisterToReturn>> GetAllRegistrationsAsync(SpecParams specParams, CancellationToken cancellationToken);
+
 
     }
 }

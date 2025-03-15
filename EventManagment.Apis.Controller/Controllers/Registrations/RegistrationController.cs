@@ -1,6 +1,8 @@
 ﻿using EventManagment.Apis.Controller.Controllers.Base;
 using EventManagment.Core.Application.Abstraction;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Registrations;
+using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +28,13 @@ namespace EventManagment.Apis.Controller.Controllers.Registrations
 
         }
 
-
+        [Authorize(Roles = Roles.Admin)]
+        [HttpGet("GetAllEvents-For-Admin")]
+        public async Task<ActionResult<Pagination<RegisterToReturn>>> GetAllRegistration([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
+        {
+            var products = await serviceManager.RegistrationService.GetAllRegistrationsAsync(specParams, cancellationToken);
+            return Ok(products);
+        }
 
 
     }
