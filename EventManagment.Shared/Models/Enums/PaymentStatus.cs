@@ -12,5 +12,7 @@ namespace EventManagment.Core.Domain.Enums
         [EnumMember(Value = "Payment Failed")]
 
         PaymentFailed,
+        [EnumMember(Value = "Refunded")]
+        PaymentCanceled,
     }
 }

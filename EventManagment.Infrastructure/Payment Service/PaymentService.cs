@@ -83,8 +83,11 @@ namespace EventManagment.Infrastructure.Payment_Service
                 case "payment_intent.payment_failed":
                     order = await UpdatePaymentIntent(paymentIntent.Id, isPaid: false);
                     logger.LogInformation("register is !Succeeded With Payment IntentId:{0}", paymentIntent.Id);
-
-
+                    break;
+                case "charge.refunded":
+                    var chargeRefunded = (Charge)stripeEvent.Data.Object;
+                    await UpdateRefundStatus(chargeRefunded.PaymentIntentId, isRefunded: true);
+                    logger.LogInformation("Refund processed for PaymentIntentId: {0}", chargeRefunded.PaymentIntentId);
                     break;
             }
         }
@@ -108,6 +111,81 @@ namespace EventManagment.Infrastructure.Payment_Service
 
             await unitOfWork.CompleteAsync();
             return order;
+        }
+
+        private async Task<Registration> UpdateRefundStatus(string paymentIntentId, bool isRefunded)
+        {
+            var repo = unitOfWork.GetRepository<Registration, int>();
+            var spec = new RegistrationByPaymentIntentSpecifications(paymentIntentId);
+            var registration = await repo.GetWithSpecAsync(spec, default);
+
+            if (registration is null)
+            {
+                throw new NotFoundExeption(nameof(registration), $"PaymentIntentId: {paymentIntentId}");
+            }
+
+            registration.PaymentStatus = isRefunded ? PaymentStatus.PaymentCanceled : PaymentStatus.PaymentFailed;
+            repo.Update(registration);
+
+            await unitOfWork.CompleteAsync();
+            return registration;
+        }
+        public async Task<RegisterToReturn> CancelRegistrationAndRefund(int registerId)
+        {
+            StripeConfiguration.ApiKey = _stripSettings.SecretKey;
+
+            var repo = unitOfWork.GetRepository<Registration, int>();
+            var register = await repo.GetAsync(registerId);
+
+            if (register is null)
+            {
+                throw new NotFoundExeption("Registration not found.", nameof(registerId));
+            }
+
+            if (string.IsNullOrEmpty(register.PaymentIntentId))
+            {
+                throw new BadRequestExeption("No payment intent associated with this registration.");
+            }
+
+            if (register.PaymentStatus != PaymentStatus.PaymentReceived)
+            {
+                throw new BadRequestExeption("Payment has not been received. Refund cannot be processed.");
+            }
+
+            // Create a refund using Stripe
+            var refundService = new RefundService();
+            var refundOptions = new RefundCreateOptions
+            {
+                PaymentIntent = register.PaymentIntentId,
+                Amount = (long)register.ServicePrice * 100, // Amount in cents
+                Reason = RefundReasons.RequestedByCustomer
+            };
+
+            try
+            {
+                var refund = await refundService.CreateAsync(refundOptions);
+
+                // Update the registration status to reflect cancellation and refund
+                register.PaymentStatus = PaymentStatus.PaymentCanceled;
+                repo.Update(register);
+
+                var complete = await unitOfWork.CompleteAsync() > 0;
+                if (!complete)
+                {
+                    throw new BadRequestExeption("Failed to update registration status.");
+                }
+
+                logger.LogInformation("Refund processed successfully for registration ID: {0}", registerId);
+
+                // Map the updated registration to the return DTO
+                var result = mapper.Map<RegisterToReturn>(register);
+                return result;
+            }
+            catch (StripeException ex)
+            {
+                logger.LogError(ex, "Failed to process refund for registration ID: {0}", registerId);
+                throw new BadRequestExeption("Failed to process refund. Please try again later.");
+            }
         }
     }
 }

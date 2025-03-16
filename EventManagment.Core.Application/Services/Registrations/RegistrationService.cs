@@ -8,6 +8,7 @@ using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Core.Domain.Entities.Events;
 using EventManagment.Core.Domain.Entities.Registrations;
+using EventManagment.Core.Domain.Enums;
 using EventManagment.Core.Domain.Specifications.Registrations;
 using EventManagment.Shared.Errors.Models;
 using EventManagment.Shared.Models._Common.Emails;
@@ -83,6 +84,13 @@ namespace EventManagment.Core.Application.Services.Registrations
 
             var checkcategoryexsist = await _unitOfWork.GetRepository<Event, int>().GetAsync(createRegisterDto.Eventid);
             if (checkcategoryexsist is null) return NotFound<RegisterToReturn>(createRegisterDto.Eventid, "Event Not Exsist with This Id");
+
+            else if (checkcategoryexsist.Data < DateTime.Now) return BadRequest<RegisterToReturn>("Event Date is Passed");
+
+            else if (checkcategoryexsist.Status == EventStatus.canceled) return BadRequest<RegisterToReturn>("Event is Canceled");
+            else if (checkcategoryexsist.Status == EventStatus.completed) return BadRequest<RegisterToReturn>("Event is Completed");
+
+            else if (checkcategoryexsist.MaxAttendees <= checkcategoryexsist.Registrations.Count) return BadRequest<RegisterToReturn>("Event is Full");
 
             var repo = _unitOfWork.GetRepository<Registration, int>();
             var register = _mapper.Map<Registration>(createRegisterDto);

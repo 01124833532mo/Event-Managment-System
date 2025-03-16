@@ -2,12 +2,13 @@
 using EventManagment.Core.Application.Abstraction;
 using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Events;
+using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventManagment.Apis.Controller.Controllers.Events
 {
-    [Authorize]
+    [Authorize(Roles = Roles.Admin + "" + Roles.Organizer)]
     public class EventController(IServiceManager serviceManager) : BaseApiController
     {
         [HttpPost("CreateEvent")]
