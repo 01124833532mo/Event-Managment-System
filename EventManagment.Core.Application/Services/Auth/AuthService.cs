@@ -101,6 +101,8 @@ namespace EventManagment.Core.Application.Services.Auth
 
             var result = await signInManager.CheckPasswordSignInAsync(user, loginDto.Password, lockoutOnFailure: true);
 
+            if (result.IsNotAllowed)
+                throw new UnAuthorizedExeption("Email is Not Confirmed");
 
             if (result.IsLockedOut)
                 throw new UnAuthorizedExeption("Email is Locked Out");
@@ -166,16 +168,9 @@ namespace EventManagment.Core.Application.Services.Auth
 
             if (!result.Succeeded) throw new ValidationExeption() { Errors = result.Errors.Select(p => p.Description) };
 
-            //var refresktoken = GenerateRefreshToken();
 
-            //user.RefreshTokens.Add(new RefreshToken()
-            //{
-            //    Token = refresktoken.Token,
-            //    ExpireOn = refresktoken.ExpireOn
-            //});
-
-            //await userManager.UpdateAsync(user);
-
+            var emailtoConfirm = new ForgetPasswordByEmailDto() { Email = user.Email };
+            await ConfirmationCodeSendByEmailAsync(emailtoConfirm);
 
 
             var roleresult = registerDto.Types.ToString() == Roles.Attendee ? await userManager.AddToRoleAsync(user, Roles.Attendee.ToString())
@@ -370,7 +365,7 @@ namespace EventManagment.Core.Application.Services.Auth
             var Email = new Email()
             {
                 To = emailDto.Email,
-                Subject = "Reset Code For CarCare Account",
+                Subject = "Reset Code For Event Managment Account",
                 Body = $"We Have Recived Your Request For Reset Your Account Password, \nYour Reset Code Is ==> [ {ResetCode} ] <== \nNote: This Code Will Be Expired After 15 Minutes!",
             };
 
@@ -695,6 +690,41 @@ namespace EventManagment.Core.Application.Services.Auth
                 Message = "Password changed successfully.",
                 Token = newToken
             };
+        }
+
+        public async Task<SuccessDto> ConfirmationCodeSendByEmailAsync(ForgetPasswordByEmailDto emailDto)
+        {
+            var result = await ForgetPasswordByEmailasync(emailDto);
+
+            return result;
+        }
+        public async Task<SuccessDto> ConfirmEmailAsync(ConfirmationEmailCodeDto codeDto)
+        {
+            var user = await userManager.Users.Where(U => U.Email == codeDto.Email).FirstOrDefaultAsync();
+
+            if (user is null)
+                throw new BadRequestExeption("Invalid Email");
+
+            if (user.ResetCode != codeDto.ConfirmationCode)
+                throw new BadRequestExeption("The Provided Code Is Invalid");
+
+            if (user.ResetCodeExpiry < DateTime.UtcNow)
+                throw new BadRequestExeption("The Provided Code Has Been Expired");
+
+            user.EmailConfirmed = true;
+
+            var result = await userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+                throw new BadRequestExeption("Something Went Wrong While Confirming Email");
+
+            var SuccessObj = new SuccessDto()
+            {
+                Status = "Success",
+                Message = "Email Has Been Confirmed"
+            };
+
+            return SuccessObj;
         }
     }
 

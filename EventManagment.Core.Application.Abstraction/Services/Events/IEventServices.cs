@@ -6,11 +6,11 @@ namespace EventManagment.Core.Application.Abstraction.Services.Events
 {
     public interface IEventServices
     {
-        public Task<Response<EventToreturn>> CreateEvent(EventDto eventDto);
+        public Task<Response<EventToreturn>> CreateEvent(EventDto eventDto, CancellationToken cancellationToken);
 
-        public Task<Response<EventToreturn>> UpdateEvent(int id, EventDto eventDto);
+        public Task<Response<EventToreturn>> UpdateEvent(int id, EventDto eventDto, CancellationToken cancellationToken);
 
-        Task<Response<string>> DeleteEvent(int id);
+        Task<Response<string>> DeleteEvent(int id, CancellationToken cancellationToken);
 
 
         Task<Response<EventToreturn>> GetEventByIdAsync(int id, CancellationToken cancellationToken);

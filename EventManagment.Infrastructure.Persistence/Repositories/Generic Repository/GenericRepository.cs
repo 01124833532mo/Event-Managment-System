@@ -45,9 +45,9 @@ namespace EventManagment.Infrastructure.Persistence.Repositories.Generic_Reposit
 
 
 
-        public async Task<TEntity?> GetAsync(TKey id)
+        public async Task<TEntity?> GetAsync(TKey id, CancellationToken cancellationToken)
         {
-            return await _dbContext.Set<TEntity>().FindAsync(id);
+            return await _dbContext.Set<TEntity>().FindAsync(id, cancellationToken);
 
 
         }

@@ -15,6 +15,8 @@ namespace EventManagment.Core.Application.Abstraction.Services.Registrations
 
         Task<Pagination<RegisterToReturn>> GetAllRegistrationForSpecificUserAsync(SpecParams specParams, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken);
 
+        Task<Response<string>> CancelRegistrationAsync(int id, CancellationToken cancellationToken);
+
 
     }
 }

@@ -1,6 +1,7 @@
 using EventManagment.Apis.Extintions;
 using EventManagment.Apis.MiddleWares;
 using EventManagment.Core.Application;
+using EventManagment.Infrastructure;
 using EventManagment.Infrastructure.Persistence;
 using EventManagment.Shared;
 using EventManagment.Shared.Errors.Response;
@@ -33,6 +34,7 @@ builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddSharedDependency(builder.Configuration);
+builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.RegesteredPresestantLayer();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();

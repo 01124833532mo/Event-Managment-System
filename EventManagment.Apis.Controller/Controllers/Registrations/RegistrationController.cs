@@ -42,5 +42,12 @@ namespace EventManagment.Apis.Controller.Controllers.Registrations
             return Ok(products);
         }
 
+        [HttpDelete("Cancel-Registration/{id}")]
+        public async Task<ActionResult<string>> CancelRegistration([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var products = await serviceManager.RegistrationService.CancelRegistrationAsync(id, cancellationToken);
+            return Ok(products);
+        }
+
     }
 }

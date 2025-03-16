@@ -1,4 +1,6 @@
-﻿namespace EventManagment.Shared.Models.Events
+﻿using EventManagment.Core.Domain.Enums;
+
+namespace EventManagment.Shared.Models.Events
 {
     public class EventDto
     {
@@ -10,6 +12,9 @@
         public required string Location { get; set; }
         public required int MaxAttendees { get; set; }
         public int Categoryid { get; set; }
+
+        public EventStatus? Status { get; set; }
+
 
     }
 }

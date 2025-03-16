@@ -2,26 +2,31 @@
 using EventManagment.Core.Application.Abstraction;
 using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Events;
+using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventManagment.Apis.Controller.Controllers.Events
 {
-    [Authorize]
+
+
+
+
+    [Authorize(Roles = Roles.Organizer + "," + Roles.Admin)]
     public class EventController(IServiceManager serviceManager) : BaseApiController
     {
         [HttpPost("CreateEvent")]
-        public async Task<ActionResult> CreateEvent([FromBody] EventDto eventDto)
+        public async Task<ActionResult> CreateEvent([FromBody] EventDto eventDto, CancellationToken cancellationToken)
         {
-            var result = await serviceManager.EventServices.CreateEvent(eventDto);
+            var result = await serviceManager.EventServices.CreateEvent(eventDto, cancellationToken);
             return NewResult(result);
 
         }
 
         [HttpPut("UpdateEvent/{id}")]
-        public async Task<ActionResult> UpdateEvent([FromRoute] int id, [FromBody] EventDto eventDto)
+        public async Task<ActionResult> UpdateEvent([FromRoute] int id, [FromBody] EventDto eventDto, CancellationToken cancellationToken)
         {
-            var result = await serviceManager.EventServices.UpdateEvent(id, eventDto);
+            var result = await serviceManager.EventServices.UpdateEvent(id, eventDto, cancellationToken);
             return NewResult(result);
 
         }
@@ -35,9 +40,9 @@ namespace EventManagment.Apis.Controller.Controllers.Events
         }
 
         [HttpDelete("DeleteEvent/{id}")]
-        public async Task<ActionResult> DeleteEvent([FromRoute] int id)
+        public async Task<ActionResult> DeleteEvent([FromRoute] int id, CancellationToken cancellationToken)
         {
-            var result = await serviceManager.EventServices.DeleteEvent(id);
+            var result = await serviceManager.EventServices.DeleteEvent(id, cancellationToken);
             return NewResult(result);
 
         }

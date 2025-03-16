@@ -19,6 +19,7 @@ namespace EventManagment.Shared
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
+            services.Configure<StripSettings>(configuration.GetSection("StripeSettings"));
 
             services.AddHangfire(h => h.UseSqlServerStorage(configuration.GetConnectionString("EventManagmentContext")))
                     .AddHangfireServer();
