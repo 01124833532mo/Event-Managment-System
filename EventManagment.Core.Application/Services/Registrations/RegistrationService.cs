@@ -2,6 +2,7 @@
 using EventManagment.Core.Application.Abstraction.Bases;
 using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Core.Application.Abstraction.Common.Contracts.Infrastracture;
+using EventManagment.Core.Application.Abstraction.Services.Emails;
 using EventManagment.Core.Application.Abstraction.Services.Registrations;
 using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities._Identity;
@@ -9,7 +10,9 @@ using EventManagment.Core.Domain.Entities.Events;
 using EventManagment.Core.Domain.Entities.Registrations;
 using EventManagment.Core.Domain.Specifications.Registrations;
 using EventManagment.Shared.Errors.Models;
+using EventManagment.Shared.Models._Common.Emails;
 using EventManagment.Shared.Models.Registrations;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
@@ -20,7 +23,8 @@ namespace EventManagment.Core.Application.Services.Registrations
         , IMapper _mapper,
         ILogger<RegistrationService> _logger,
         UserManager<ApplicationUser> userManager,
-        IPaymentService paymentService) : ResponseHandler, IRegistrationService
+        IPaymentService paymentService,
+        IEmailService emailService) : ResponseHandler, IRegistrationService
     {
 
 
@@ -100,9 +104,9 @@ namespace EventManagment.Core.Application.Services.Registrations
                 return BadRequest<RegisterToReturn>("Failed to create register");
             }
 
-            var FullNameUser = await userManager.FindByIdAsync(register.AttendeeId);
+            var Attendee = await userManager.FindByIdAsync(register.AttendeeId);
 
-            if (FullNameUser == null)
+            if (Attendee is null)
             {
                 throw new BadRequestExeption("User not found");
             }
@@ -111,12 +115,53 @@ namespace EventManagment.Core.Application.Services.Registrations
             var result = await paymentService.CreateOrUpdatePaymentIntent(regiserid);
 
             var returnedData = _mapper.Map<RegisterToReturn>(register);
-            returnedData.FullName = FullNameUser.FullName;
+            returnedData.FullName = Attendee.FullName;
+
+
+            _logger.LogInformation("CreateRegisterAsync succeeded");
+
+            _logger.LogInformation("Email sent to {0}", Attendee.Email);
+
+            var EmailToResend = new Email()
+            {
+                Subject = "Registeration",
+                Body = "Registeration You have successfully registered to the event",
+                To = Attendee.Email!
+            };
+            BackgroundJob.Enqueue(() => emailService.SendEmail(EmailToResend));
+
+
+
+
+
+            RecurringJob.AddOrUpdate(
+                  $"EventNotification_{register.Id}", // id 
+                  () => SendEventNotificationAsync(register.Id, checkcategoryexsist.Data, Attendee.Email!),
+                  "0 0 */5 * *" // Every 5 days
+              );
 
             return Success(returnedData);
 
         }
+        public async Task SendEventNotificationAsync(int registerId, DateTime eventDate, string attendeeEmail)
+        {
+            if (DateTime.Now >= eventDate)
+            {
+                RecurringJob.RemoveIfExists($"EventNotification_{registerId}");
+                _logger.LogInformation($"Recurring job stopped for registration ID: {registerId}");
+                return;
+            }
 
+            var date = eventDate - DateTime.Now;
 
+            var NotificationMail = new Email()
+            {
+                Subject = "Event Notification",
+                Body = $"Be CareFull, remaining for the event {date.Days} days, {date.Hours} hours, and {date.Minutes} minutes.",
+                To = attendeeEmail
+            };
+
+            await emailService.SendEmail(NotificationMail);
+        }
     }
 }
