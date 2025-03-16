@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EventManagment.Core.Application.Abstraction.Bases;
 using EventManagment.Core.Application.Abstraction.Common;
+using EventManagment.Core.Application.Abstraction.Common.Contracts.Infrastracture;
 using EventManagment.Core.Application.Abstraction.Services.Emails;
 using EventManagment.Core.Application.Abstraction.Services.Events;
 using EventManagment.Core.Domain.Contracts.Persestence;
@@ -19,7 +20,11 @@ using Microsoft.Extensions.Logging;
 
 namespace EventManagment.Core.Application.Services.Events
 {
-    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper, UserManager<ApplicationUser> userManager, IEmailService emailService, ILogger<EventService> logger) : ResponseHandler, IEventServices
+    public class EventService(IUnitOfWork _unitOfWork,
+        IMapper _mapper, UserManager<ApplicationUser> userManager,
+        IEmailService emailService,
+        ILogger<EventService> logger,
+        IPaymentService paymentService) : ResponseHandler, IEventServices
     {
 
         public async Task<Response<EventToreturn>> GetEventByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -136,6 +141,22 @@ namespace EventManagment.Core.Application.Services.Events
             if (Event is null) return NotFound<string>(id, "Not Event With This Id:"); ;
 
             repo.Delete(Event);
+
+
+            var registration = Event.Registrations.ToList();
+            foreach (var register in registration)
+            {
+                logger.LogInformation("Cancel Registration And Refund Service Called");
+                await paymentService.CancelRegistrationAndRefund(register.Id, cancellationToken);
+
+                var email = new Email()
+                {
+                    Subject = "Event Deleted",
+                    Body = $"Dear {register.Attendee.FullName},\n\nThe event '{Event.Title}' has been Deleted.\n\nEvent Date: {Event.Data}  \n\n  Your Money Alaready Returned To Your Account \n\nThank you!",
+                    To = register.Attendee.Email!
+                };
+
+            }
 
             var result = await _unitOfWork.CompleteAsync() > 0;
 
