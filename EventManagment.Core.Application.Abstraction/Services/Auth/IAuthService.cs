@@ -38,6 +38,9 @@ namespace EventManagment.Core.Application.Abstraction.Services.Auth
 
         Task<ChangePasswordToReturn> ChangePasswordAsync(ClaimsPrincipal claims, ChangePasswordDto changePasswordDto);
 
+        public Task<SuccessDto> ConfirmationCodeSendByEmailAsync(ForgetPasswordByEmailDto emailDto);
+        public Task<SuccessDto> ConfirmEmailAsync(ConfirmationEmailCodeDto codeDto);
+
 
     }
 }

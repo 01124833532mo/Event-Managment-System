@@ -76,5 +76,12 @@ namespace EventManagment.Apis.Controller.Controllers.Auth
             var result = await serviceManager.AuthService.ChangePasswordAsync(User, changePasswordDto);
             return Ok(result);
         }
+
+        [HttpPost("ConfirmEmail")]
+        public async Task<ActionResult> ConfirmEmail(ConfirmationEmailCodeDto codeDto)
+        {
+            var result = await serviceManager.AuthService.ConfirmEmailAsync(codeDto);
+            return Ok(result);
+        }
     }
 }
