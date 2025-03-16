@@ -45,7 +45,7 @@ namespace EventManagment.Core.Application.Services.Events
 
         }
 
-        public async Task<Pagination<EventToreturn>> GetAllEventsAsynce(SpecParams specParams, CancellationToken cancellationToken)
+        public async Task<Pagination<EventToreturn>> GetAllEventsAsynce(SpecParams specParams, CancellationToken cancellationToken = default)
         {
             var spec = new EvenstWithCategoryAndOrgnizerSpecification(specParams.Sort, specParams.CategoryId, specParams.Orgnizerid, specParams.PageSize, specParams.PageIndex, specParams.Search);
 
@@ -58,9 +58,9 @@ namespace EventManagment.Core.Application.Services.Events
 
             return new Pagination<EventToreturn>(specParams.PageIndex, specParams.PageSize, count) { Data = data };
         }
-        public async Task<Response<EventToreturn>> CreateEvent(EventDto eventDto)
+        public async Task<Response<EventToreturn>> CreateEvent(EventDto eventDto, CancellationToken cancellationToken = default)
         {
-            var checkcategoryexsist = await _unitOfWork.GetRepository<Category, int>().GetAsync(eventDto.Categoryid);
+            var checkcategoryexsist = await _unitOfWork.GetRepository<Category, int>().GetAsync(eventDto.Categoryid, cancellationToken);
             if (checkcategoryexsist is null) return NotFound<EventToreturn>(eventDto.Categoryid, "Category Not Exsist with This Id");
 
             var mappedevent = _mapper.Map<Event>(eventDto);
@@ -91,14 +91,14 @@ namespace EventManagment.Core.Application.Services.Events
         }
 
 
-        public async Task<Response<EventToreturn>> UpdateEvent(int id, EventDto eventDto)
+        public async Task<Response<EventToreturn>> UpdateEvent(int id, EventDto eventDto, CancellationToken cancellationToken = default)
         {
 
-            var existingEvent = await _unitOfWork.GetRepository<Event, int>().GetAsync(id);
+            var existingEvent = await _unitOfWork.GetRepository<Event, int>().GetAsync(id, cancellationToken);
             if (existingEvent == null)
                 return NotFound<EventToreturn>(id, "Event not found with this ID");
 
-            var checkCategoryExist = await _unitOfWork.GetRepository<Category, int>().GetAsync(eventDto.Categoryid);
+            var checkCategoryExist = await _unitOfWork.GetRepository<Category, int>().GetAsync(eventDto.Categoryid, cancellationToken);
             if (checkCategoryExist == null)
                 return NotFound<EventToreturn>(eventDto.Categoryid, "Category does not exist with this ID");
 
@@ -128,10 +128,10 @@ namespace EventManagment.Core.Application.Services.Events
             return Success(mappedResult);
         }
 
-        public async Task<Response<string>> DeleteEvent(int id)
+        public async Task<Response<string>> DeleteEvent(int id, CancellationToken cancellationToken = default)
         {
             var repo = _unitOfWork.GetRepository<Event, int>();
-            var Event = await repo.GetAsync(id);
+            var Event = await repo.GetAsync(id, cancellationToken);
 
             if (Event is null) return NotFound<string>(id, "Not Event With This Id:"); ;
 

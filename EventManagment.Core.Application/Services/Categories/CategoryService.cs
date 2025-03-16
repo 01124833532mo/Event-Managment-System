@@ -59,7 +59,7 @@ namespace EventManagment.Core.Application.Services.Categories
 
 
             var repo = _unitOfWork.GetRepository<Category, int>();
-            var category = await repo.GetAsync(id);
+            var category = await repo.GetAsync(id, cancellationToken);
 
             if (category is null)
             {

@@ -4,9 +4,9 @@ namespace EventManagment.Core.Application.Abstraction.Common.Contracts.Infrastra
 {
     public interface IPaymentService
     {
-        public Task<RegisterToReturn> CreateOrUpdatePaymentIntent(int registerid);
+        public Task<RegisterToReturn> CreateOrUpdatePaymentIntent(int registerid, CancellationToken cancellationToken);
         Task UpdateOrderPaymentStatus(string requestBody, string header);
-        public Task<RegisterToReturn> CancelRegistrationAndRefund(int registerId);
+        public Task<RegisterToReturn> CancelRegistrationAndRefund(int registerId, CancellationToken cancellationToken);
 
     }
 }

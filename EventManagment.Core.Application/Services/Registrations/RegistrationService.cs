@@ -82,7 +82,7 @@ namespace EventManagment.Core.Application.Services.Registrations
         {
             _logger.LogInformation("CreateRegisterAsync called");
 
-            var checkcategoryexsist = await _unitOfWork.GetRepository<Event, int>().GetAsync(createRegisterDto.Eventid);
+            var checkcategoryexsist = await _unitOfWork.GetRepository<Event, int>().GetAsync(createRegisterDto.Eventid, cancellationToken);
             if (checkcategoryexsist is null) return NotFound<RegisterToReturn>(createRegisterDto.Eventid, "Event Not Exsist with This Id");
 
             else if (checkcategoryexsist.Data < DateTime.Now) return BadRequest<RegisterToReturn>("Event Date is Passed");
@@ -120,7 +120,7 @@ namespace EventManagment.Core.Application.Services.Registrations
             }
             var regiserid = register.Id;
 
-            var result = await paymentService.CreateOrUpdatePaymentIntent(regiserid);
+            var result = await paymentService.CreateOrUpdatePaymentIntent(regiserid, cancellationToken);
 
             var returnedData = _mapper.Map<RegisterToReturn>(register);
             returnedData.FullName = Attendee.FullName;
@@ -170,6 +170,40 @@ namespace EventManagment.Core.Application.Services.Registrations
             };
 
             await emailService.SendEmail(NotificationMail);
+        }
+
+        public async Task<Response<string>> CancelRegistrationAsync(int id, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("CancelRegistrationAsync called");
+
+            var repo = _unitOfWork.GetRepository<Registration, int>();
+
+            var spec = new RegistrationWithEventAndCategorySpecification(id);
+
+            var registration = await repo.GetWithSpecAsync(spec, cancellationToken);
+
+            if (registration is null)
+                return NotFound<string>(id, "Registration Not Found With This Id");
+
+
+            repo.Delete(registration);
+
+            await paymentService.CancelRegistrationAndRefund(registration.Id, cancellationToken);
+
+
+            var complete = await _unitOfWork.CompleteAsync() > 0;
+
+            if (!complete)
+            {
+                _logger.LogWarning("CancelRegistrationAsync failed");
+                return BadRequest<string>("Failed to cancel register");
+            }
+
+            _logger.LogInformation("CancelRegistrationAsync succeeded");
+
+            return Success("Registeration Canceled Successfully");
+
+
         }
     }
 }

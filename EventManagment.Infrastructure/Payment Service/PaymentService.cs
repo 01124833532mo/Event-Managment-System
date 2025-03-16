@@ -21,12 +21,12 @@ namespace EventManagment.Infrastructure.Payment_Service
     {
         private readonly StripSettings _stripSettings = stripsettings.Value;
 
-        public async Task<RegisterToReturn> CreateOrUpdatePaymentIntent(int registerid)
+        public async Task<RegisterToReturn> CreateOrUpdatePaymentIntent(int registerid, CancellationToken cancellationToken = default)
         {
             StripeConfiguration.ApiKey = _stripSettings.SecretKey;
             var repo = unitOfWork.GetRepository<Registration, int>();
 
-            var register = await repo.GetAsync(registerid);
+            var register = await repo.GetAsync(registerid, cancellationToken);
             if (register is null) throw new NotFoundExeption("No register Exsist For ", nameof(registerid));
 
             PaymentIntent? paymentIntent = null;
@@ -130,12 +130,12 @@ namespace EventManagment.Infrastructure.Payment_Service
             await unitOfWork.CompleteAsync();
             return registration;
         }
-        public async Task<RegisterToReturn> CancelRegistrationAndRefund(int registerId)
+        public async Task<RegisterToReturn> CancelRegistrationAndRefund(int registerId, CancellationToken cancellation = default)
         {
             StripeConfiguration.ApiKey = _stripSettings.SecretKey;
 
             var repo = unitOfWork.GetRepository<Registration, int>();
-            var register = await repo.GetAsync(registerId);
+            var register = await repo.GetAsync(registerId, cancellation);
 
             if (register is null)
             {
@@ -147,17 +147,19 @@ namespace EventManagment.Infrastructure.Payment_Service
                 throw new BadRequestExeption("No payment intent associated with this registration.");
             }
 
-            if (register.PaymentStatus != PaymentStatus.PaymentReceived)
+            var paymentIntentService = new PaymentIntentService();
+            var paymentIntent = await paymentIntentService.GetAsync(register.PaymentIntentId, cancellationToken: cancellation);
+
+            if (paymentIntent.Status != "succeeded")
             {
-                throw new BadRequestExeption("Payment has not been received. Refund cannot be processed.");
+                throw new BadRequestExeption("The payment has not been successfully completed. Refund cannot be processed.");
             }
 
-            // Create a refund using Stripe
             var refundService = new RefundService();
             var refundOptions = new RefundCreateOptions
             {
                 PaymentIntent = register.PaymentIntentId,
-                Amount = (long)register.ServicePrice * 100, // Amount in cents
+                Amount = (long)register.ServicePrice * 100,
                 Reason = RefundReasons.RequestedByCustomer
             };
 
@@ -165,7 +167,6 @@ namespace EventManagment.Infrastructure.Payment_Service
             {
                 var refund = await refundService.CreateAsync(refundOptions);
 
-                // Update the registration status to reflect cancellation and refund
                 register.PaymentStatus = PaymentStatus.PaymentCanceled;
                 repo.Update(register);
 
@@ -177,7 +178,6 @@ namespace EventManagment.Infrastructure.Payment_Service
 
                 logger.LogInformation("Refund processed successfully for registration ID: {0}", registerId);
 
-                // Map the updated registration to the return DTO
                 var result = mapper.Map<RegisterToReturn>(register);
                 return result;
             }
