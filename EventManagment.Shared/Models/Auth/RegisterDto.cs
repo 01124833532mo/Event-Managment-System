@@ -1,4 +1,5 @@
 ﻿using EventManagment.Core.Domain._Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace EventManagment.Shared.Models.Auth
 {
@@ -16,5 +17,7 @@ namespace EventManagment.Shared.Models.Auth
         //					ErrorMessage = "Password must have 1 UpperCase,1 LowerCase,1 number , 1 non alphanumberic and at least 6 characters ")]
         public required string Password { get; set; }
         public required Types Types { get; set; }
+
+        public IFormFile? PictureUrl { get; set; }
     }
 }

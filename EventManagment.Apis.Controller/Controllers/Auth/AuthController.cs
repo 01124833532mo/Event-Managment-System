@@ -20,7 +20,7 @@ namespace EventManagment.Apis.Controller.Controllers.Auth
 
         [HttpPost("Register")]
 
-        public async Task<ActionResult<UserToReturn>> Register(RegisterDto model)
+        public async Task<ActionResult<UserToReturn>> Register([FromForm] RegisterDto model)
         {
             var result = await serviceManager.AuthService.RegisterAsync(model);
             return Ok(result);

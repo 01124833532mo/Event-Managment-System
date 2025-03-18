@@ -33,6 +33,7 @@ namespace EventManagment.Core.Application.Services.Registrations
         {
             var spec = new RegistrationWithEventAndCategorySpecification(specParams.Sort, specParams.EventId, specParams.RegistrationId, specParams.PageSize, specParams.PageIndex);
 
+            _logger.LogInformation("Get All Registrations Service Called");
 
             var registrations = await _unitOfWork.GetRepository<Registration, int>().GetAllWithSpecAsync(spec);
 

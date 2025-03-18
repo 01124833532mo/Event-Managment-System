@@ -1,4 +1,5 @@
-﻿using EventManagment.Core.Application.Abstraction.Services.Auth;
+﻿using EventManagment.Core.Application.Abstraction.Common.Contracts.Infrastracture;
+using EventManagment.Core.Application.Abstraction.Services.Auth;
 using EventManagment.Core.Application.Abstraction.Services.Emails;
 using EventManagment.Core.Domain._Identity;
 using EventManagment.Core.Domain.Entities._Identity;
@@ -9,6 +10,7 @@ using EventManagment.Shared.Models.Roles;
 using EventManagment.Shared.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -23,7 +25,9 @@ namespace EventManagment.Core.Application.Services.Auth
         , SignInManager<ApplicationUser> signInManager,
         RoleManager<IdentityRole> roleManager
         , IOptions<JwtSettings> jwtsettings,
-        IEmailService emailService, ILogger<AuthService> logger) : IAuthService
+        IEmailService emailService, ILogger<AuthService> logger,
+        IAttachmentService attachmentService,
+        IConfiguration configuration) : IAuthService
     {
         private readonly JwtSettings _jwtsettings = jwtsettings.Value;
 
@@ -164,6 +168,21 @@ namespace EventManagment.Core.Application.Services.Auth
 
             };
 
+            if (registerDto.PictureUrl is not null)
+            {
+                var uploadedImageUrl = await attachmentService.UploadAsynce(registerDto.PictureUrl, "ProfilePicture");
+
+                if (uploadedImageUrl is not null)
+                {
+                    user.PictureUrl = uploadedImageUrl;
+                }
+                else
+                {
+
+                    user.PictureUrl = null;
+                }
+            }
+
             var result = await userManager.CreateAsync(user, registerDto.Password);
 
             if (!result.Succeeded) throw new ValidationExeption() { Errors = result.Errors.Select(p => p.Description) };
@@ -187,6 +206,7 @@ namespace EventManagment.Core.Application.Services.Auth
                 PhoneNumber = user.PhoneNumber,
                 Types = user.Types.ToString(),
                 Token = await GenerateTokenAsync(user),
+                PictureUrl = $"{configuration["Urls:ApiBaseUrl"]}/{user.PictureUrl}"
 
             };
 
@@ -647,6 +667,8 @@ namespace EventManagment.Core.Application.Services.Auth
                 FullName = user.FullName,
                 PhoneNumber = user.PhoneNumber,
                 Types = user.Types.ToString(),
+                PictureUrl = $"{configuration["Urls:ApiBaseUrl"]}/{user.PictureUrl}",
+
 
                 Token = await GenerateTokenAsync(user)
 

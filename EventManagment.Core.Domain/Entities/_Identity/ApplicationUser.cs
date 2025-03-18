@@ -22,6 +22,8 @@ namespace EventManagment.Core.Domain.Entities._Identity
         public Types Types { get; set; }
         public int? ResetCode { get; set; }
         public DateTime? ResetCodeExpiry { get; set; }
+
+        public string? PictureUrl { get; set; }
         public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
         public virtual ICollection<Event> Events { get; set; } = new List<Event>();
         public virtual ICollection<Registration> Registrations { get; set; } = new List<Registration>();

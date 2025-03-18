@@ -58,6 +58,7 @@ app.MapHangfireDashboard("/Dashbord");
 
 app.UseAuthorization();
 
+app.UseStaticFiles();
 app.MapControllers();
 
 app.Run();

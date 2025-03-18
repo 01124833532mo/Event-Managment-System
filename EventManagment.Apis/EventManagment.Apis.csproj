@@ -24,4 +24,8 @@
     <ProjectReference Include="..\EventManagment.Shared\EventManagment.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\ProfilePicture\" />
+  </ItemGroup>
+
 </Project>

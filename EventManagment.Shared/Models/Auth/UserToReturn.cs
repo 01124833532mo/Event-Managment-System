@@ -10,6 +10,7 @@
         public required string Token { get; set; }
         public string? RefreshToken { get; set; } = null!;
         public DateTime? RefreshTokenExpirationDate { get; set; }
+        public string? PictureUrl { get; set; }
     }
 
 }
