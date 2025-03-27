@@ -94,7 +94,7 @@ namespace EventManagment.Core.Application.Services.Auth
         #endregion
 
         #region Login & Register
-        public async Task<UserToReturn> LoginAsync(LoginDto loginDto)
+        public async Task<BaseToReturn> LoginAsync(LoginDto loginDto)
         {
             var user = await userManager.FindByEmailAsync(loginDto.Email);
             if (user is null)
@@ -119,12 +119,15 @@ namespace EventManagment.Core.Application.Services.Auth
 
             if (userroles.Any(role => role == Roles.Organizer))
             {
-                var response = new UserToReturn
+                var response = new OrganizerToReturn
                 {
                     Id = user.Id,
                     FullName = user.FullName,
                     PhoneNumber = user.PhoneNumber!,
                     Email = user.Email!,
+                    Age = ((Organizer)user).Age,
+                    Address = ((Organizer)user).Address!,
+                    CompanyName = ((Organizer)user).CompanyName!,
                     Types = user.Types.ToString(),
                     Token = await GenerateTokenAsync(user),
 
@@ -135,14 +138,16 @@ namespace EventManagment.Core.Application.Services.Auth
             }
             else
             {
-                var response = new UserToReturn
+                var response = new AttendeeToReturn
                 {
                     Id = user.Id,
                     FullName = user.FullName!,
                     PhoneNumber = user.PhoneNumber!,
                     Email = user.Email!,
+                    BirthDate = ((Attendde)user).BirthDate!.Value,
                     Types = user.Types.ToString(),
                     Token = await GenerateTokenAsync(user),
+
 
                 };
                 await CheckRefreshToken(userManager, user, response);
@@ -150,67 +155,33 @@ namespace EventManagment.Core.Application.Services.Auth
                 return response;
             }
         }
-        public async Task<UserToReturn> RegisterAsync(RegisterDto registerDto)
+        public async Task<BaseToReturn> RegisterAsync(RegisterDto registerDto)
         {
+            if (userManager.Users.Any(e => e.Email == registerDto.Email))
+                throw new BadRequestExeption("Email Already Exists");
 
-            var email = userManager.Users.Where(e => e.Email == registerDto.Email).FirstOrDefault();
-            if (email is not null)
-                throw new BadRequestExeption("Email Already Exsist");
-
-            var user = new ApplicationUser()
-            {
-                FullName = registerDto.FullName,
-                Email = registerDto.Email,
-                UserName = registerDto.Email,
-                PhoneNumber = registerDto.PhoneNumber,
-                Types = registerDto.Types,
-
-
-            };
+            var user = registerDto.Types == Types.Organizer
+                ? (ApplicationUser)CreateOrganizer(registerDto)
+                : CreateAttendee(registerDto);
 
             if (registerDto.PictureUrl is not null)
             {
                 var uploadedImageUrl = await attachmentService.UploadAsynce(registerDto.PictureUrl, "ProfilePicture");
-
-                if (uploadedImageUrl is not null)
-                {
-                    user.PictureUrl = uploadedImageUrl;
-                }
-                else
-                {
-
-                    user.PictureUrl = null;
-                }
+                user.PictureUrl = uploadedImageUrl;
             }
 
             var result = await userManager.CreateAsync(user, registerDto.Password);
+            if (!result.Succeeded)
+                throw new ValidationExeption { Errors = result.Errors.Select(p => p.Description) };
 
-            if (!result.Succeeded) throw new ValidationExeption() { Errors = result.Errors.Select(p => p.Description) };
+            await ConfirmationCodeSendByEmailAsync(new ForgetPasswordByEmailDto { Email = user.Email! });
 
+            string role = registerDto.Types == Types.Organizer ? Roles.Organizer.ToString() : Roles.Attendee.ToString();
+            var roleResult = await userManager.AddToRoleAsync(user, role);
+            if (!roleResult.Succeeded)
+                throw new ValidationExeption { Errors = roleResult.Errors.Select(e => e.Description) };
 
-            var emailtoConfirm = new ForgetPasswordByEmailDto() { Email = user.Email };
-            await ConfirmationCodeSendByEmailAsync(emailtoConfirm);
-
-
-            var roleresult = registerDto.Types.ToString() == Roles.Attendee ? await userManager.AddToRoleAsync(user, Roles.Attendee.ToString())
-                : await userManager.AddToRoleAsync(user, Roles.Organizer.ToString());
-
-            if (!roleresult.Succeeded)
-                throw new ValidationExeption() { Errors = roleresult.Errors.Select(E => E.Description) };
-
-            var response = new UserToReturn()
-            {
-                Id = user.Id,
-                FullName = user.FullName,
-                Email = user.Email!,
-                PhoneNumber = user.PhoneNumber,
-                Types = user.Types.ToString(),
-                Token = await GenerateTokenAsync(user),
-                PictureUrl = $"{configuration["Urls:ApiBaseUrl"]}/{user.PictureUrl}"
-
-            };
-
-            return response;
+            return CreateUserResponse(user);
         }
         #endregion
 
@@ -244,7 +215,7 @@ namespace EventManagment.Core.Application.Services.Auth
         }
 
 
-        public async Task<UserToReturn> CreateAttendences(CreateAttendenceDro createUserDro)
+        public async Task<BaseToReturn> CreateAttendences(CreateAttendenceDro createUserDro)
         {
             var user = new ApplicationUser
             {
@@ -281,7 +252,7 @@ namespace EventManagment.Core.Application.Services.Auth
 
             await userManager.UpdateAsync(user);
 
-            var response = new UserToReturn
+            var response = new BaseToReturn
             {
                 Id = user.Id,
                 PhoneNumber = user.PhoneNumber,
@@ -422,7 +393,7 @@ namespace EventManagment.Core.Application.Services.Auth
             return SuccessObj;
         }
 
-        public async Task<UserToReturn> ResetPasswordByEmailAsync(ResetPasswordByEmailDto resetCodeDto)
+        public async Task<BaseToReturn> ResetPasswordByEmailAsync(ResetPasswordByEmailDto resetCodeDto)
         {
             var user = await userManager.Users.Where(u => u.Email == resetCodeDto.Email).FirstOrDefaultAsync();
 
@@ -439,7 +410,7 @@ namespace EventManagment.Core.Application.Services.Auth
             if (!newPass.Succeeded)
                 throw new BadRequestExeption("Something Went Wrong While Reseting Your Password");
 
-            var mappedUser = new UserToReturn
+            var mappedUser = new BaseToReturn
             {
                 FullName = user.FullName!,
                 Id = user.Id,
@@ -475,7 +446,7 @@ namespace EventManagment.Core.Application.Services.Auth
         }
         #region Refresh Token
 
-        public async Task<UserToReturn> GetRefreshToken(RefreshDto refreshDto, CancellationToken cancellationToken = default)
+        public async Task<BaseToReturn> GetRefreshToken(RefreshDto refreshDto, CancellationToken cancellationToken = default)
         {
             var userId = ValidateToken(refreshDto.Token);
 
@@ -502,7 +473,7 @@ namespace EventManagment.Core.Application.Services.Auth
 
             await userManager.UpdateAsync(user);
 
-            return new UserToReturn()
+            return new BaseToReturn()
             {
                 Id = user.Id,
                 FullName = user.FullName,
@@ -630,7 +601,7 @@ namespace EventManagment.Core.Application.Services.Auth
 
 
         }
-        private async Task CheckRefreshToken(UserManager<ApplicationUser> userManager, ApplicationUser? user, UserToReturn response)
+        private async Task CheckRefreshToken(UserManager<ApplicationUser> userManager, ApplicationUser? user, BaseToReturn response)
         {
             if (user!.RefreshTokens.Any(t => t.IsActice))
             {
@@ -655,12 +626,12 @@ namespace EventManagment.Core.Application.Services.Auth
         }
         #endregion
 
-        public async Task<UserToReturn> GetCurrentUser(ClaimsPrincipal claimsPrincipal)
+        public async Task<BaseToReturn> GetCurrentUser(ClaimsPrincipal claimsPrincipal)
         {
             var email = claimsPrincipal.FindFirstValue(ClaimTypes.Email);
             var user = await userManager.FindByEmailAsync(email!);
 
-            return new UserToReturn()
+            return new BaseToReturn()
             {
                 Id = user!.Id,
                 Email = user!.Email!,
@@ -747,6 +718,78 @@ namespace EventManagment.Core.Application.Services.Auth
             };
 
             return SuccessObj;
+        }
+
+        private Organizer CreateOrganizer(RegisterDto dto)
+        {
+            return new Organizer
+            {
+                FullName = dto.FullName,
+                Email = dto.Email,
+                UserName = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+                Types = dto.Types,
+                Age = dto.Age,
+                Address = dto.Address,
+                CompanyName = dto.CompanyName
+            };
+        }
+
+        private Attendde CreateAttendee(RegisterDto dto)
+        {
+            return new Attendde
+            {
+                FullName = dto.FullName,
+                Email = dto.Email,
+                UserName = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+                Types = dto.Types,
+                BirthDate = dto.BirthDate
+            };
+        }
+
+        private BaseToReturn CreateUserResponse(ApplicationUser user)
+        {
+
+
+            if (user is Organizer org)
+            {
+                var response = new OrganizerToReturn
+                {
+
+                    Id = org.Id,
+                    FullName = org.FullName,
+                    Email = org.Email!,
+                    PhoneNumber = org.PhoneNumber!,
+                    Types = org.Types.ToString(),
+                    Token = GenerateTokenAsync(org).Result,
+                    PictureUrl = org.PictureUrl != null ? $"{configuration["Urls:ApiBaseUrl"]}/{user.PictureUrl}" : null,
+                    Age = org.Age,
+                    Address = org.Address!,
+                    CompanyName = org.CompanyName!,
+                };
+
+                return response;
+            }
+            else if (user is Attendde att)
+            {
+                var response = new AttendeeToReturn
+                {
+
+                    Id = att.Id,
+                    FullName = att.FullName,
+                    Email = att.Email!,
+                    PhoneNumber = att.PhoneNumber!,
+                    Types = att.Types.ToString(),
+                    Token = GenerateTokenAsync(att).Result,
+                    PictureUrl = att.PictureUrl != null ? $"{configuration["Urls:ApiBaseUrl"]}/{user.PictureUrl}" : null,
+                    BirthDate = att.BirthDate!.Value,
+                };
+
+                return response;
+            }
+            return null!;
+
         }
     }
 

@@ -35,7 +35,7 @@ namespace EventManagment.Core.Domain.Entities.Events
         public EventStatus Status { get; set; } = EventStatus.scheduled;
 
         public string? OrganizerId { get; set; }
-        public virtual ApplicationUser Organizer { get; set; }
+        public virtual Organizer Organizer { get; set; }
         public virtual ICollection<Registration> Registrations { get; set; } = new HashSet<Registration>();
         public virtual ICollection<Notification> Notifications { get; set; } = new HashSet<Notification>();
 

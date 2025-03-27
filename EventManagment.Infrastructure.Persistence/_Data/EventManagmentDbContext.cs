@@ -29,6 +29,8 @@ namespace EventManagment.Infrastructure.Persistence._Data
         public DbSet<Registration> Registrations { get; set; }
 
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Attendde> Attenddes { get; set; }
+        public DbSet<Organizer> Organizers { get; set; }
 
     }
 }

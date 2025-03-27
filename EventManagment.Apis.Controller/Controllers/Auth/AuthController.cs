@@ -12,7 +12,7 @@ namespace EventManagment.Apis.Controller.Controllers.Auth
     {
         [HttpPost("login")]
 
-        public async Task<ActionResult<UserToReturn>> Login(LoginDto model)
+        public async Task<ActionResult<BaseToReturn>> Login(LoginDto model)
         {
             var result = await serviceManager.AuthService.LoginAsync(model);
             return Ok(result);
@@ -20,7 +20,7 @@ namespace EventManagment.Apis.Controller.Controllers.Auth
 
         [HttpPost("Register")]
 
-        public async Task<ActionResult<UserToReturn>> Register([FromForm] RegisterDto model)
+        public async Task<ActionResult<BaseToReturn>> Register([FromForm] RegisterDto model)
         {
             var result = await serviceManager.AuthService.RegisterAsync(model);
             return Ok(result);
@@ -47,7 +47,7 @@ namespace EventManagment.Apis.Controller.Controllers.Auth
         }
         [HttpPost("Get-Refresh-Token")]
 
-        public async Task<ActionResult<UserToReturn>> RefreshToken([FromBody] RefreshDto model)
+        public async Task<ActionResult<BaseToReturn>> RefreshToken([FromBody] RefreshDto model)
         {
             var result = await serviceManager.AuthService.GetRefreshToken(model);
             return Ok(result);
@@ -62,7 +62,7 @@ namespace EventManagment.Apis.Controller.Controllers.Auth
         }
         [Authorize]
         [HttpGet("GetCurrentUser")]
-        public async Task<ActionResult<UserToReturn>> GetCurrentUser()
+        public async Task<ActionResult<BaseToReturn>> GetCurrentUser()
         {
 
             var result = await serviceManager.AuthService.GetCurrentUser(User);

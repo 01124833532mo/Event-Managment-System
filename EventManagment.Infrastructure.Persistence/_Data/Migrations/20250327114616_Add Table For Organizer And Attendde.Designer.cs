@@ -4,6 +4,7 @@ using EventManagment.Infrastructure.Persistence._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 {
     [DbContext(typeof(EventManagmentDbContext))]
-    partial class EventManagmentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250327114616_Add Table For Organizer And Attendde")]
+    partial class AddTableForOrganizerAndAttendde
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -452,7 +455,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                 {
                     b.HasBaseType("EventManagment.Core.Domain.Entities._Identity.ApplicationUser");
 
-                    b.Property<DateOnly?>("BirthDate")
+                    b.Property<DateOnly>("BirthDate")
                         .HasColumnType("date");
 
                     b.HasDiscriminator().HasValue("Attendde");
@@ -463,15 +466,15 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.HasBaseType("EventManagment.Core.Domain.Entities._Identity.ApplicationUser");
 
                     b.Property<string>("Address")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Age")
+                    b.Property<int>("Age")
                         .HasColumnType("int");
 
                     b.Property<string>("CompanyName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("Organizer");
                 });

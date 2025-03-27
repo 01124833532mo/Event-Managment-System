@@ -45,7 +45,7 @@ namespace EventManagment.Apis.Controller.Controllers.DashBoard
         }
 
         [HttpPost("CreateUser")]
-        public async Task<ActionResult<UserToReturn>> CreateUser(CreateAttendenceDro createUserDro)
+        public async Task<ActionResult<BaseToReturn>> CreateUser(CreateAttendenceDro createUserDro)
         {
             var result = await serviceManager.AuthService.CreateAttendences(createUserDro);
             return Ok(result);
