@@ -9,5 +9,7 @@ namespace EventManagment.Core.Application.Abstraction.Services.FeedBacks
 
         public Task<Response<string>> CreateFeedBack(ClaimsPrincipal claims, CreateFeedBackDto createFeedBackDto, CancellationToken cancellationToken);
 
+        public Task<Response<string>> RemoveFeedBack(int id, CancellationToken cancellationToken);
+
     }
 }

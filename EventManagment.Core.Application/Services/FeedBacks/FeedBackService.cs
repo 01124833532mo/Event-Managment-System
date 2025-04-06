@@ -65,5 +65,29 @@ namespace EventManagment.Core.Application.Services.FeedBacks
 
             }
         }
+
+        public async Task<Response<string>> RemoveFeedBack(int id, CancellationToken cancellationToken)
+        {
+            var repo = unitOfWork.GetRepository<Feedback, int>();
+
+            var FeedBack = await repo.GetAsync(id, cancellationToken);
+            if (FeedBack is null)
+                return NotFound<string>(id, "FeedBack not found");
+
+            try
+            {
+                repo.Delete(FeedBack);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest<string>(ex.Message);
+            }
+
+            var result = await unitOfWork.CompleteAsync() > 0;
+            if (!result)
+                return BadRequest<string>("Failed to remove FeedBack");
+
+            return Success("Succssfully Remove FeedBack");
+        }
     }
 }

@@ -19,5 +19,13 @@ namespace EventManagment.Apis.Controller.Controllers.FeedBacks
 
         }
 
+        [Authorize(Roles = Roles.Attendee)]
+        [HttpDelete("RemoveFeedBack/{id}")]
+        public async Task<ActionResult> RemoveFeedBack([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.FeedBackService.RemoveFeedBack(id, cancellationToken);
+            return NewResult(result);
+        }
+
     }
 }
