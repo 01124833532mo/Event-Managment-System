@@ -16,6 +16,10 @@
 
         public string? CategoryName { get; set; }
 
+        public decimal EventRate { get; set; }
+
+        public int EventCountRating { get; set; }
+
         public string CreatedBy { get; set; } = null!;
 
         public DateTime CreatedOn { get; set; }
