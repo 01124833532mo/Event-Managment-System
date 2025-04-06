@@ -32,7 +32,34 @@ namespace EventManagment.Core.Application.Services.FeedBacks
 
         }
 
+        public async Task<Pagination<FeedBackToRetuen>> GetAllFeedBackForSpecificAttendee(ClaimsPrincipal claims, SpecParams specParams, CancellationToken cancellationToken = default)
+        {
+            var Attendeeid = claims.FindFirstValue(ClaimTypes.PrimarySid);
+            if (Attendeeid is null)
+                throw new UnauthorizedAccessException("You are not authorized to rate this event");
 
+            var spec = new GetwithEventAndAttenddeSpecification(specParams.EventId, Attendeeid, specParams.PageSize, specParams.PageIndex);
+
+            var FeedBacks = await unitOfWork.GetRepository<Feedback, int>().GetAllWithSpecAsync(spec);
+            var countSpec = new FeedBackWithFilterationForCountSpecifications(specParams.EventId, Attendeeid);
+            var count = await unitOfWork.GetRepository<Feedback, int>().GetCountAsync(countSpec, cancellationToken);
+            var data = mapper.Map<IEnumerable<FeedBackToRetuen>>(FeedBacks);
+            return new Pagination<FeedBackToRetuen>(specParams.PageIndex, specParams.PageSize, count) { Data = data };
+        }
+
+        public async Task<Response<FeedBackToRetuen>> GetFeedBackByIdAsync(int id, CancellationToken cancellationToken)
+        {
+
+            var repo = unitOfWork.GetRepository<Feedback, int>();
+            var spec = new FeedBackWithFilterationForCountSpecifications(id);
+            var FeedBack = await repo.GetWithSpecAsync(spec, cancellationToken);
+            if (FeedBack is null)
+            {
+                return NotFound<FeedBackToRetuen>(id, "FeedBack Not Found With This Id");
+            };
+            var mappedFeedBack = mapper.Map<FeedBackToRetuen>(FeedBack);
+            return Success(mappedFeedBack, 1);
+        }
 
 
         public async Task<Response<string>> CreateFeedBack(ClaimsPrincipal claims, CreateFeedBackDto createFeedBackDto, CancellationToken cancellationToken = default)
@@ -116,5 +143,7 @@ namespace EventManagment.Core.Application.Services.FeedBacks
 
             return Success("Succssfully Remove FeedBack");
         }
+
+
     }
 }

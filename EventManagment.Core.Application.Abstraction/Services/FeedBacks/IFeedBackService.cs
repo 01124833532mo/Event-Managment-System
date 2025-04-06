@@ -14,5 +14,10 @@ namespace EventManagment.Core.Application.Abstraction.Services.FeedBacks
 
         public Task<Pagination<FeedBackToRetuen>> GetAllFeedBack(SpecParams specParams, CancellationToken cancellationToken);
 
+        public Task<Response<FeedBackToRetuen>> GetFeedBackByIdAsync(int id, CancellationToken cancellationToken);
+
+        public Task<Pagination<FeedBackToRetuen>> GetAllFeedBackForSpecificAttendee(ClaimsPrincipal claims, SpecParams spec, CancellationToken cancellationToken);
+
+
     }
 }

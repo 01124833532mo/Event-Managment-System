@@ -34,6 +34,20 @@ namespace EventManagment.Apis.Controller.Controllers.FeedBacks
             var products = await serviceManager.FeedBackService.GetAllFeedBack(specParams, cancellationToken);
             return Ok(products);
         }
+        [AllowAnonymous]
+        [HttpGet("GetFeedBackById/{id}")]
+        public async Task<ActionResult> GetFeedBackById([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.FeedBackService.GetFeedBackByIdAsync(id, cancellationToken);
+            return NewResult(result);
 
+        }
+        [Authorize(Roles = Roles.Attendee)]
+        [HttpGet("Get-FeedBack-To-Specific-Attendde")]
+        public async Task<ActionResult<Pagination<FeedBackToRetuen>>> GetAllFeedBackForSpecificAttendee([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
+        {
+            var products = await serviceManager.FeedBackService.GetAllFeedBackForSpecificAttendee(User, specParams, cancellationToken);
+            return Ok(products);
+        }
     }
 }
