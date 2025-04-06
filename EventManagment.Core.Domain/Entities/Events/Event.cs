@@ -5,6 +5,7 @@ using EventManagment.Core.Domain.Entities.Common;
 using EventManagment.Core.Domain.Entities.FeedBacks;
 using EventManagment.Core.Domain.Entities.Notifications;
 using EventManagment.Core.Domain.Entities.Registrations;
+using EventManagment.Core.Domain.Entities.Sponsers;
 using EventManagment.Core.Domain.Enums;
 
 namespace EventManagment.Core.Domain.Entities.Events
@@ -33,6 +34,10 @@ namespace EventManagment.Core.Domain.Entities.Events
 
 
         public virtual ICollection<Feedback>? Feedbacks { get; set; } = new HashSet<Feedback>();
+
+
+        public int? SponserId { get; set; }
+        public virtual Sponser? Sponser { get; set; }
 
 
     }

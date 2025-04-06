@@ -4,6 +4,7 @@ using EventManagment.Core.Domain.Entities.Events;
 using EventManagment.Core.Domain.Entities.FeedBacks;
 using EventManagment.Core.Domain.Entities.Notifications;
 using EventManagment.Core.Domain.Entities.Registrations;
+using EventManagment.Core.Domain.Entities.Sponsers;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,6 +32,7 @@ namespace EventManagment.Infrastructure.Persistence._Data
 
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<Sponser> Sponsers { get; set; }
 
 
     }
