@@ -20,6 +20,13 @@ namespace EventManagment.Core.Domain.Entities.Events
         public DateTime Data { get; set; }
         public required string Location { get; set; }
         public required int MaxAttendees { get; set; }
+
+        public decimal? EventRate { get; set; }
+
+        public int EventCountRating { get; set; }
+
+
+
         public EventStatus Status { get; set; } = EventStatus.scheduled;
 
         public string? OrganizerId { get; set; }
