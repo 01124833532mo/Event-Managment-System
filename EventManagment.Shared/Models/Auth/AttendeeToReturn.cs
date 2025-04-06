@@ -2,6 +2,6 @@
 {
     public class AttendeeToReturn : BaseToReturn
     {
-        public DateOnly BirthDate { get; set; }
+        public DateOnly? BirthDate { get; set; }
     }
 }

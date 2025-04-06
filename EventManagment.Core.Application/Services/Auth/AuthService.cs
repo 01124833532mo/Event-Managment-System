@@ -130,7 +130,7 @@ namespace EventManagment.Core.Application.Services.Auth
                     CompanyName = ((Organizer)user).CompanyName!,
                     Types = user.Types.ToString(),
                     Token = await GenerateTokenAsync(user),
-
+                    PictureUrl = $"{configuration["Urls:ApiBaseUrl"]}/{user.PictureUrl}",
                 };
                 await CheckRefreshToken(userManager, user, response);
 
@@ -144,9 +144,10 @@ namespace EventManagment.Core.Application.Services.Auth
                     FullName = user.FullName!,
                     PhoneNumber = user.PhoneNumber!,
                     Email = user.Email!,
-                    BirthDate = ((Attendde)user).BirthDate!.Value,
+                    BirthDate = ((Attendde)user).BirthDate,
                     Types = user.Types.ToString(),
                     Token = await GenerateTokenAsync(user),
+                    PictureUrl = $"{configuration["Urls:ApiBaseUrl"]}/{user.PictureUrl}",
 
 
                 };
@@ -630,20 +631,58 @@ namespace EventManagment.Core.Application.Services.Auth
         {
             var email = claimsPrincipal.FindFirstValue(ClaimTypes.Email);
             var user = await userManager.FindByEmailAsync(email!);
+            if (user is null) throw new NotFoundExeption("User Not Found", nameof(email));
+            var role = await userManager.GetRolesAsync(user);
 
-            return new BaseToReturn()
+            if (role.Any(r => r == Roles.Organizer))
             {
-                Id = user!.Id,
-                Email = user!.Email!,
-                FullName = user.FullName,
-                PhoneNumber = user.PhoneNumber,
-                Types = user.Types.ToString(),
-                PictureUrl = $"{configuration["Urls:ApiBaseUrl"]}/{user.PictureUrl}",
+                var org = (Organizer)user;
+                return new OrganizerToReturn()
+                {
+                    Id = org.Id,
+                    Email = org.Email!,
+                    FullName = org.FullName,
+                    PhoneNumber = org.PhoneNumber!,
+                    Types = user.Types.ToString(),
+                    PictureUrl = $"{configuration["Urls:ApiBaseUrl"]}/{user.PictureUrl}",
+                    Token = await GenerateTokenAsync(user),
+                    Age = org.Age,
+                    Address = org.Address!,
+                    CompanyName = org.CompanyName!
+                };
+            }
+            else if (role.Any(r => r == Roles.Attendee))
+            {
+                var att = (Attendde)user;
+                return new AttendeeToReturn()
+                {
+                    Id = att.Id,
+                    Email = att.Email!,
+                    FullName = att.FullName,
+                    PhoneNumber = att.PhoneNumber!,
+                    Types = user.Types.ToString(),
+                    PictureUrl = $"{configuration["Urls:ApiBaseUrl"]}/{user.PictureUrl}",
+                    Token = await GenerateTokenAsync(user),
+                    BirthDate = att.BirthDate
+                };
+            }
+            else if (role.Any(r => r == Roles.Admin))
+            {
+                return new BaseToReturn
+                {
+
+                    Id = user.Id,
+                    Email = user.Email!,
+                    FullName = user.FullName,
+                    PhoneNumber = user.PhoneNumber!,
+                    Types = user.Types.ToString(),
+                    PictureUrl = $"{configuration["Urls:ApiBaseUrl"]}/{user.PictureUrl}",
+                    Token = await GenerateTokenAsync(user),
+                };
+            }
+            throw new NotFoundExeption("User Not Found", nameof(email));
 
 
-                Token = await GenerateTokenAsync(user)
-
-            };
         }
 
         public async Task<ChangePasswordToReturn> ChangePasswordAsync(ClaimsPrincipal claims, ChangePasswordDto changePasswordDto)
