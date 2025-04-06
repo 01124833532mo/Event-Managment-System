@@ -65,6 +65,12 @@ namespace EventManagment.Infrastructure.Persistence._Data.Configuration.Data
                  .IsRequired()
                  .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasMany(p => p.Feedbacks)
+                    .WithOne(p => p.Event)
+                    .HasForeignKey(p => p.EventId)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

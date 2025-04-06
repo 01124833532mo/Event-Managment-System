@@ -12,6 +12,12 @@ namespace EventManagment.Infrastructure.Persistence._Data.Configuration.identity
                       .HasColumnType("date")
                       .IsRequired(false);
 
+            builder.HasMany(p => p.Feedbacks)
+                .WithOne(p => p.Attendde)
+                .HasForeignKey(p => p.AttenddeId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
+
         }
     }
 }

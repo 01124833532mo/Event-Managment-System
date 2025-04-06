@@ -1,6 +1,7 @@
 ﻿using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Core.Domain.Entities.Categories;
 using EventManagment.Core.Domain.Entities.Events;
+using EventManagment.Core.Domain.Entities.FeedBacks;
 using EventManagment.Core.Domain.Entities.Notifications;
 using EventManagment.Core.Domain.Entities.Registrations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -29,8 +30,8 @@ namespace EventManagment.Infrastructure.Persistence._Data
         public DbSet<Registration> Registrations { get; set; }
 
         public DbSet<Notification> Notifications { get; set; }
-        public DbSet<Attendde> Attenddes { get; set; }
-        public DbSet<Organizer> Organizers { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
+
 
     }
 }
