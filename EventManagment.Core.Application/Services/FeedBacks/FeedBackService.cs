@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using EventManagment.Core.Application.Abstraction.Bases;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Core.Application.Abstraction.Services.FeedBacks;
 using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities.Events;
 using EventManagment.Core.Domain.Entities.FeedBacks;
+using EventManagment.Core.Domain.Specifications.FeedBacks;
+using EventManagment.Shared.Errors.Models;
 using EventManagment.Shared.Models.FeedBacks;
 using System.Security.Claims;
 
@@ -11,8 +14,30 @@ namespace EventManagment.Core.Application.Services.FeedBacks
 {
     public class FeedBackService(IUnitOfWork unitOfWork, IMapper mapper) : ResponseHandler, IFeedBackService
     {
+
+        public async Task<Pagination<FeedBackToRetuen>> GetAllFeedBack(SpecParams specParams, CancellationToken cancellationToken = default)
+        {
+
+            var Event = await unitOfWork.GetRepository<Event, int>().GetAsync(specParams.EventId ?? 0, cancellationToken);
+            if (Event is null)
+                throw new NotFoundExeption("Event Not Found With This Id", specParams.EventId!);
+
+            var spec = new GetwithEventAndAttenddeSpecification(specParams.EventId, specParams.Attendeeid, specParams.PageSize, specParams.PageIndex);
+
+            var FeedBacks = await unitOfWork.GetRepository<Feedback, int>().GetAllWithSpecAsync(spec);
+            var data = mapper.Map<IEnumerable<FeedBackToRetuen>>(FeedBacks);
+            var countSpec = new FeedBackWithFilterationForCountSpecifications(specParams.EventId, specParams.Attendeeid);
+            var count = await unitOfWork.GetRepository<Feedback, int>().GetCountAsync(countSpec, cancellationToken);
+            return new Pagination<FeedBackToRetuen>(specParams.PageIndex, specParams.PageSize, count) { Data = data };
+
+        }
+
+
+
+
         public async Task<Response<string>> CreateFeedBack(ClaimsPrincipal claims, CreateFeedBackDto createFeedBackDto, CancellationToken cancellationToken = default)
         {
+
             {
 
                 var repo = unitOfWork.GetRepository<Event, int>();
@@ -65,6 +90,8 @@ namespace EventManagment.Core.Application.Services.FeedBacks
 
             }
         }
+
+
 
         public async Task<Response<string>> RemoveFeedBack(int id, CancellationToken cancellationToken)
         {

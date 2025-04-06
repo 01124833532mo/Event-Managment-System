@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using EventManagment.Core.Domain.Entities.Categories;
 using EventManagment.Core.Domain.Entities.Events;
+using EventManagment.Core.Domain.Entities.FeedBacks;
 using EventManagment.Core.Domain.Entities.Registrations;
 using EventManagment.Shared.Models.Categories;
 using EventManagment.Shared.Models.Events;
+using EventManagment.Shared.Models.FeedBacks;
 using EventManagment.Shared.Models.Registrations;
 
 namespace EventManagment.Core.Application.Mapping
@@ -17,6 +19,10 @@ namespace EventManagment.Core.Application.Mapping
             CreateMap<Event, EventToreturn>()
                .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category.Name))
                .ForMember(dest => dest.OrganizerName, otp => otp.MapFrom(src => src.Organizer.FullName));
+
+            CreateMap<Feedback, FeedBackToRetuen>()
+              .ForMember(dest => dest.AttenddeName, otp => otp.MapFrom(src => src.Attendde!.FullName))
+              .ForMember(dest => dest.EventTitel, otp => otp.MapFrom(src => src.Event!.Title));
 
             CreateMap<CategoryDto, Category>().ReverseMap();
 

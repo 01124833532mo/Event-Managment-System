@@ -1,5 +1,6 @@
 ﻿using EventManagment.Apis.Controller.Controllers.Base;
 using EventManagment.Core.Application.Abstraction;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.FeedBacks;
 using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +26,13 @@ namespace EventManagment.Apis.Controller.Controllers.FeedBacks
         {
             var result = await serviceManager.FeedBackService.RemoveFeedBack(id, cancellationToken);
             return NewResult(result);
+        }
+        [AllowAnonymous]
+        [HttpGet("GetAllFeedBack")]
+        public async Task<ActionResult<Pagination<FeedBackToRetuen>>> GetAllFeedBacks([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
+        {
+            var products = await serviceManager.FeedBackService.GetAllFeedBack(specParams, cancellationToken);
+            return Ok(products);
         }
 
     }
