@@ -21,7 +21,7 @@ namespace EventManagment.Core.Domain.Entities.Events
         public required string Location { get; set; }
         public required int MaxAttendees { get; set; }
 
-        public decimal? EventRate { get; set; }
+        public decimal EventRate { get; set; }
 
         public int EventCountRating { get; set; }
 
