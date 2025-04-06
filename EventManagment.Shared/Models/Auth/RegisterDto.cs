@@ -1,4 +1,5 @@
 ﻿using EventManagment.Core.Domain._Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace EventManagment.Shared.Models.Auth
 {
@@ -12,9 +13,16 @@ namespace EventManagment.Shared.Models.Auth
 
         public required string PhoneNumber { get; set; }
 
-        //[RegularExpression("(?=^.{6,10}$)(?=.\\d)(?=.[a-z])(?=.[A-Z])(?=.[!@#%^&amp;()_+}{&quot;:;'?/&gt;.&lt;,])(?!.\\s).*$",
-        //					ErrorMessage = "Password must have 1 UpperCase,1 LowerCase,1 number , 1 non alphanumberic and at least 6 characters ")]
+        public DateOnly? BirthDate { get; set; }
+
+        public int? Age { get; set; }
+        public string? Address { get; set; }
+        public string? CompanyName { get; set; }
+
+
         public required string Password { get; set; }
         public required Types Types { get; set; }
+
+        public IFormFile? PictureUrl { get; set; }
     }
 }

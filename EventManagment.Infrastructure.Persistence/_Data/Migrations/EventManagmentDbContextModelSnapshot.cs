@@ -17,7 +17,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.13")
+                .HasAnnotation("ProductVersion", "8.0.14")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -53,7 +53,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Events.Event", b =>
@@ -63,6 +63,9 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AttenddeId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("Categoryid")
                         .HasColumnType("int");
@@ -80,6 +83,12 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EventCountRating")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("EventRate")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("LastModifiedBy")
                         .IsRequired()
@@ -102,6 +111,9 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.Property<string>("OrganizerId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("SponserId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -111,11 +123,60 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AttenddeId");
+
                     b.HasIndex("Categoryid");
 
                     b.HasIndex("OrganizerId");
 
-                    b.ToTable("Events", (string)null);
+                    b.HasIndex("SponserId");
+
+                    b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.FeedBacks.Feedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AttenddeId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttenddeId");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Notifications.Notification", b =>
@@ -160,7 +221,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     b.HasIndex("eventid");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Registrations.Registration", b =>
@@ -195,6 +256,9 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.Property<DateTime>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("OrganizerId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("PaymentIntentId")
                         .HasColumnType("nvarchar(max)");
 
@@ -210,7 +274,42 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     b.HasIndex("Eventid");
 
-                    b.ToTable("Registrations", (string)null);
+                    b.HasIndex("OrganizerId");
+
+                    b.ToTable("Registrations");
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Sponsers.Sponser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("LogoUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Website")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sponsers");
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", b =>
@@ -225,6 +324,11 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -260,6 +364,9 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("PictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("ResetCode")
                         .HasColumnType("int");
 
@@ -291,6 +398,10 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -426,19 +537,74 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.Attendde", b =>
+                {
+                    b.HasBaseType("EventManagment.Core.Domain.Entities._Identity.ApplicationUser");
+
+                    b.Property<DateOnly?>("BirthDate")
+                        .HasColumnType("date");
+
+                    b.HasDiscriminator().HasValue("Attendde");
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.Organizer", b =>
+                {
+                    b.HasBaseType("EventManagment.Core.Domain.Entities._Identity.ApplicationUser");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar");
+
+                    b.Property<int?>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CompanyName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar");
+
+                    b.HasDiscriminator().HasValue("Organizer");
+                });
+
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Events.Event", b =>
                 {
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.Attendde", null)
+                        .WithMany("Events")
+                        .HasForeignKey("AttenddeId");
+
                     b.HasOne("EventManagment.Core.Domain.Entities.Categories.Category", "Category")
                         .WithMany("Events")
                         .HasForeignKey("Categoryid");
 
-                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", "Organizer")
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.Organizer", "Organizer")
                         .WithMany("Events")
                         .HasForeignKey("OrganizerId");
+
+                    b.HasOne("EventManagment.Core.Domain.Entities.Sponsers.Sponser", "Sponser")
+                        .WithMany("Events")
+                        .HasForeignKey("SponserId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Category");
 
                     b.Navigation("Organizer");
+
+                    b.Navigation("Sponser");
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.FeedBacks.Feedback", b =>
+                {
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.Attendde", "Attendde")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("AttenddeId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("EventManagment.Core.Domain.Entities.Events.Event", "Event")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("EventId");
+
+                    b.Navigation("Attendde");
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Notifications.Notification", b =>
@@ -459,7 +625,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Registrations.Registration", b =>
                 {
-                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", "Attendee")
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.Attendde", "Attendee")
                         .WithMany("Registrations")
                         .HasForeignKey("AttendeeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -471,6 +637,10 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.Organizer", null)
+                        .WithMany("Registrations")
+                        .HasForeignKey("OrganizerId");
+
                     b.Navigation("Attendee");
 
                     b.Navigation("Event");
@@ -478,7 +648,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", b =>
                 {
-                    b.OwnsMany("EventManagment.Core.Domain.Entities._Identity.ApplicationUser.RefreshTokens#EventManagment.Core.Domain.Entities._Identity.RefreshToken", "RefreshTokens", b1 =>
+                    b.OwnsMany("EventManagment.Core.Domain.Entities._Identity.RefreshToken", "RefreshTokens", b1 =>
                         {
                             b1.Property<string>("ApplicationUserId")
                                 .HasColumnType("nvarchar(450)");
@@ -504,7 +674,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                             b1.HasKey("ApplicationUserId", "Id");
 
-                            b1.ToTable("RefreshToken", (string)null);
+                            b1.ToTable("RefreshToken");
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicationUserId");
@@ -571,16 +741,35 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Events.Event", b =>
                 {
+                    b.Navigation("Feedbacks");
+
                     b.Navigation("Notifications");
 
                     b.Navigation("Registrations");
                 });
 
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Sponsers.Sponser", b =>
+                {
+                    b.Navigation("Events");
+                });
+
             modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", b =>
+                {
+                    b.Navigation("Notifications");
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.Attendde", b =>
                 {
                     b.Navigation("Events");
 
-                    b.Navigation("Notifications");
+                    b.Navigation("Feedbacks");
+
+                    b.Navigation("Registrations");
+                });
+
+            modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.Organizer", b =>
+                {
+                    b.Navigation("Events");
 
                     b.Navigation("Registrations");
                 });

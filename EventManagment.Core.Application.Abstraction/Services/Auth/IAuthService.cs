@@ -6,9 +6,9 @@ namespace EventManagment.Core.Application.Abstraction.Services.Auth
 {
     public interface IAuthService
     {
-        Task<UserToReturn> LoginAsync(LoginDto loginDto);
+        Task<BaseToReturn> LoginAsync(LoginDto loginDto);
 
-        Task<UserToReturn> RegisterAsync(RegisterDto registerDto);
+        Task<BaseToReturn> RegisterAsync(RegisterDto registerDto);
 
 
         Task<IEnumerable<RolesToReturn>> GetRolesAsync();
@@ -19,7 +19,7 @@ namespace EventManagment.Core.Application.Abstraction.Services.Auth
         Task<RolesToReturn> UpdateRole(string id, RoleDtoBase roleDto);
 
         Task<IEnumerable<AttendencesViewModel>> GetAllAttendences();
-        Task<UserToReturn> CreateAttendences(CreateAttendenceDro createUserDro);
+        Task<BaseToReturn> CreateAttendences(CreateAttendenceDro createUserDro);
 
         Task<AttendentRoleViewModel> GetAttendence(string id);
 
@@ -28,13 +28,13 @@ namespace EventManagment.Core.Application.Abstraction.Services.Auth
 
         Task<SuccessDto> ForgetPasswordByEmailasync(ForgetPasswordByEmailDto emailDto);
         Task<SuccessDto> VerifyCodeByEmailAsync(ResetCodeConfirmationByEmailDto resetCodeDto);
-        Task<UserToReturn> ResetPasswordByEmailAsync(ResetPasswordByEmailDto resetCodeDto);
+        Task<BaseToReturn> ResetPasswordByEmailAsync(ResetPasswordByEmailDto resetCodeDto);
 
-        Task<UserToReturn> GetRefreshToken(RefreshDto refreshDto, CancellationToken cancellationToken = default);
+        Task<BaseToReturn> GetRefreshToken(RefreshDto refreshDto, CancellationToken cancellationToken = default);
 
         Task<bool> RevokeRefreshTokenAsync(RefreshDto refreshDto, CancellationToken cancellationToken = default);
 
-        Task<UserToReturn> GetCurrentUser(ClaimsPrincipal claimsPrincipal);
+        Task<BaseToReturn> GetCurrentUser(ClaimsPrincipal claimsPrincipal);
 
         Task<ChangePasswordToReturn> ChangePasswordAsync(ClaimsPrincipal claims, ChangePasswordDto changePasswordDto);
 

@@ -15,7 +15,7 @@ namespace EventManagment.Core.Domain.Entities.Registrations
         public string? PaymentIntentId { get; set; }
         public string? ClientSecret { get; set; }
         public string AttendeeId { get; set; }
-        public virtual ApplicationUser Attendee { get; set; }
+        public virtual Attendde Attendee { get; set; }
 
 
         public int Eventid { get; set; }
