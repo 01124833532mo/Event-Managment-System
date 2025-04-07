@@ -5,6 +5,7 @@ using EventManagment.Core.Application.Abstraction.Services.Emails;
 using EventManagment.Core.Application.Abstraction.Services.Events;
 using EventManagment.Core.Application.Abstraction.Services.FeedBacks;
 using EventManagment.Core.Application.Abstraction.Services.Registrations;
+using EventManagment.Core.Application.Abstraction.Services.Sponsers;
 using EventManagment.Core.Application.Mapping;
 using EventManagment.Core.Application.Services.Auth;
 using EventManagment.Core.Application.Services.Categories;
@@ -12,6 +13,7 @@ using EventManagment.Core.Application.Services.Emails;
 using EventManagment.Core.Application.Services.Events;
 using EventManagment.Core.Application.Services.FeedBacks;
 using EventManagment.Core.Application.Services.Registrations;
+using EventManagment.Core.Application.Services.Sponsers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,6 +29,7 @@ namespace EventManagment.Core.Application
             services.AddScoped(typeof(ICategoryService), typeof(CategoryService));
             services.AddScoped(typeof(IRegistrationService), typeof(RegistrationService));
             services.AddScoped(typeof(IFeedBackService), typeof(FeedBackService));
+            services.AddScoped(typeof(ISponserService), typeof(SponserService));
             services.AddTransient(typeof(IEmailService), typeof(EmailService));
 
 
@@ -59,6 +62,12 @@ namespace EventManagment.Core.Application
             services.AddScoped(typeof(Func<IFeedBackService>), (serviceprovider) =>
             {
                 return () => serviceprovider.GetRequiredService<IFeedBackService>();
+
+            });
+
+            services.AddScoped(typeof(Func<ISponserService>), (serviceprovider) =>
+            {
+                return () => serviceprovider.GetRequiredService<ISponserService>();
 
             });
             return services;
