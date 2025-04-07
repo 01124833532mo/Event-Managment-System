@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using EventManagment.Core.Application.Abstraction.Bases;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Core.Application.Abstraction.Common.Contracts.Infrastracture;
 using EventManagment.Core.Application.Abstraction.Services.Sponsers;
 using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities.Sponsers;
+using EventManagment.Core.Domain.Specifications.Sponsers;
 using EventManagment.Shared.Models.Sponsers;
 
 namespace EventManagment.Core.Application.Services.Sponsers
@@ -82,6 +84,30 @@ namespace EventManagment.Core.Application.Services.Sponsers
                 return BadRequest<string>("Failed to remove sponser");
 
             return Success("Succssfully Remove sponser");
+        }
+
+        public async Task<Pagination<SponserToReturn>> GetAllSponserAsync(SpecParams specParams, CancellationToken cancellationToken)
+        {
+
+            var spec = new GetAllSponserSpecification(specParams.PageSize, specParams.PageIndex);
+
+            var sponsers = await unitOfWork.GetRepository<Sponser, int>().GetAllWithSpecAsync(spec);
+            var data = mapper.Map<IEnumerable<SponserToReturn>>(sponsers);
+            var count = sponsers.Count();
+            return new Pagination<SponserToReturn>(specParams.PageIndex, specParams.PageSize, count) { Data = data };
+        }
+
+        public async Task<Response<SponserToReturn>> GetSponserAsync(int id, CancellationToken cancellationToken)
+        {
+            var repo = unitOfWork.GetRepository<Sponser, int>();
+            var spec = new GetAllSponserSpecification(id);
+            var sponser = await repo.GetWithSpecAsync(spec, cancellationToken);
+            if (sponser is null)
+            {
+                return NotFound<SponserToReturn>(id, "Sponser Not Found With This Id");
+            };
+            var mappedSponser = mapper.Map<SponserToReturn>(sponser);
+            return Success(mappedSponser, 1);
         }
     }
 }
