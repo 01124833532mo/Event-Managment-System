@@ -13,8 +13,11 @@ namespace EventManagment.Shared.Models.Auth
 
         public required string PhoneNumber { get; set; }
 
+        // ateendee
         public DateOnly? BirthDate { get; set; }
 
+
+        // organizer
         public int? Age { get; set; }
         public string? Address { get; set; }
         public string? CompanyName { get; set; }
