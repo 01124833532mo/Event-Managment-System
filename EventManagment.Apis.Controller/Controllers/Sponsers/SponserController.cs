@@ -18,5 +18,13 @@ namespace EventManagment.Apis.Controller.Controllers.Sponsers
             return NewResult(result);
 
         }
+
+        [HttpDelete("DeleteSponser/{id}")]
+        public async Task<ActionResult> DeleteSponser([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.SponserService.DeleteSponser(id, cancellationToken);
+            return NewResult(result);
+        }
+
     }
 }

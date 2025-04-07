@@ -33,7 +33,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Configuration.Data
                     .WithOne(p => p.Sponser)
                     .HasForeignKey(p => p.SponserId)
                     .IsRequired(false)
-                    .OnDelete(DeleteBehavior.NoAction);
+                    .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

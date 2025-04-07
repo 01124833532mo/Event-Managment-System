@@ -59,5 +59,29 @@ namespace EventManagment.Core.Application.Services.Sponsers
             //};
             return Success(returnedservice);
         }
+
+        public async Task<Response<string>> DeleteSponser(int id, CancellationToken cancellationToken)
+        {
+            var repo = unitOfWork.GetRepository<Sponser, int>();
+
+            var sponser = await repo.GetAsync(id, cancellationToken);
+            if (sponser is null)
+                return NotFound<string>(id, "sponser not found");
+
+            try
+            {
+                repo.Delete(sponser);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest<string>(ex.Message);
+            }
+
+            var result = await unitOfWork.CompleteAsync() > 0;
+            if (!result)
+                return BadRequest<string>("Failed to remove sponser");
+
+            return Success("Succssfully Remove sponser");
+        }
     }
 }

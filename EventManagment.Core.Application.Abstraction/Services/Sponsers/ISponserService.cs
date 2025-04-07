@@ -6,5 +6,6 @@ namespace EventManagment.Core.Application.Abstraction.Services.Sponsers
     public interface ISponserService
     {
         public Task<Response<SponserToReturn>> CreateSponserAsync(CreateSponserDto sponserToReturn, CancellationToken cancellationToken = default);
+        public Task<Response<string>> DeleteSponser(int id, CancellationToken cancellationToken);
     }
 }
