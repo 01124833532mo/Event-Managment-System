@@ -47,11 +47,13 @@ namespace EventManagment.Infrastructure.Persistence._Data.Interceptors
 
                     entry.Entity.CreatedBy = _loggedInUser.UserId!;
                     entry.Entity.CreatedOn = DateTime.UtcNow;
+                    entry.Entity.JoinDate = DateTime.UtcNow;
 
                 }
 
                 entry.Entity.LastModifiedBy = _loggedInUser.UserId!;
                 entry.Entity.LastModifiedOn = DateTime.UtcNow;
+                entry.Entity.JoinDate = DateTime.UtcNow;
 
             }
         }

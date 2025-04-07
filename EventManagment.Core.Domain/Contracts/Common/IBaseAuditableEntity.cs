@@ -10,5 +10,7 @@
 
 
         public DateTime LastModifiedOn { get; set; }
+        public DateTime? JoinDate { get; set; }
+
     }
 }
