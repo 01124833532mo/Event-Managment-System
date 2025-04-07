@@ -13,6 +13,8 @@ namespace EventManagment.Shared.Models.Events
         public required int MaxAttendees { get; set; }
         public int Categoryid { get; set; }
 
+        public int SponserId { get; set; }
+
         public EventStatus? Status { get; set; }
 
 

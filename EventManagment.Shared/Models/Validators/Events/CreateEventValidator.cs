@@ -27,6 +27,11 @@ namespace EventManagment.Shared.Models.Validators.Events
                                          .NotNull().WithMessage("Must Set Numbers For Attendee")
                                          ;
 
+            RuleFor(x => x.SponserId)
+                .NotEmpty().WithMessage("Sponser is required.")
+                .NotNull().WithMessage("Sponser is required.")
+                .GreaterThan(0).WithMessage("Sponser Must Be Greater Than 0");
+
 
 
 

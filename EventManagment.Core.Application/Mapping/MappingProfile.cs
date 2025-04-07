@@ -3,10 +3,12 @@ using EventManagment.Core.Domain.Entities.Categories;
 using EventManagment.Core.Domain.Entities.Events;
 using EventManagment.Core.Domain.Entities.FeedBacks;
 using EventManagment.Core.Domain.Entities.Registrations;
+using EventManagment.Core.Domain.Entities.Sponsers;
 using EventManagment.Shared.Models.Categories;
 using EventManagment.Shared.Models.Events;
 using EventManagment.Shared.Models.FeedBacks;
 using EventManagment.Shared.Models.Registrations;
+using EventManagment.Shared.Models.Sponsers;
 
 namespace EventManagment.Core.Application.Mapping
 {
@@ -16,9 +18,18 @@ namespace EventManagment.Core.Application.Mapping
         {
             CreateMap<EventDto, Event>().ReverseMap();
 
+            CreateMap<CreateSponserDto, Sponser>();
+
+
+
+            CreateMap<Sponser, SponserToReturn>()
+                .ForMember(dest => dest.LogoUrl, opt => opt.MapFrom<LogoUrlResolver>());
+
             CreateMap<Event, EventToreturn>()
                .ForMember(dest => dest.CategoryName, otp => otp.MapFrom(src => src.Category.Name))
-               .ForMember(dest => dest.OrganizerName, otp => otp.MapFrom(src => src.Organizer.FullName));
+               .ForMember(dest => dest.OrganizerName, otp => otp.MapFrom(src => src.Organizer.FullName))
+               .ForMember(dest => dest.NameOfSponser, otp => otp.MapFrom(src => src.Sponser!.Name));
+
 
             CreateMap<Feedback, FeedBackToRetuen>()
               .ForMember(dest => dest.AttenddeName, otp => otp.MapFrom(src => src.Attendde!.FullName))

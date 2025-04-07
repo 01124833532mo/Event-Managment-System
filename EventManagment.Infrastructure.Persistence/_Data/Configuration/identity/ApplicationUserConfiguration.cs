@@ -16,7 +16,8 @@ namespace EventManagment.Infrastructure.Persistence._Data.Configuration.identity
                 (
                 (UStatus) => UStatus.ToString(),
                 (UStatus) => (Types)Enum.Parse(typeof(Types), UStatus)
-                );
+            );
+
 
         }
     }

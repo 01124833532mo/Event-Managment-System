@@ -8,6 +8,7 @@ using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Core.Domain.Entities.Categories;
 using EventManagment.Core.Domain.Entities.Events;
+using EventManagment.Core.Domain.Entities.Sponsers;
 using EventManagment.Core.Domain.Enums;
 using EventManagment.Core.Domain.Specifications.Events;
 using EventManagment.Shared.Errors.Models;
@@ -65,6 +66,9 @@ namespace EventManagment.Core.Application.Services.Events
         }
         public async Task<Response<EventToreturn>> CreateEvent(EventDto eventDto, CancellationToken cancellationToken = default)
         {
+            var sponser = await _unitOfWork.GetRepository<Sponser, int>().GetAsync(eventDto.SponserId, cancellationToken);
+            if (sponser is null) return NotFound<EventToreturn>(eventDto.SponserId, "Sponser Not Exsist with This Id");
+
             var checkcategoryexsist = await _unitOfWork.GetRepository<Category, int>().GetAsync(eventDto.Categoryid, cancellationToken);
             if (checkcategoryexsist is null) return NotFound<EventToreturn>(eventDto.Categoryid, "Category Not Exsist with This Id");
 

@@ -53,7 +53,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Events.Event", b =>
@@ -131,7 +131,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     b.HasIndex("SponserId");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.FeedBacks.Feedback", b =>
@@ -176,7 +176,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Feedbacks");
+                    b.ToTable("Feedbacks", (string)null);
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Notifications.Notification", b =>
@@ -221,7 +221,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     b.HasIndex("eventid");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Registrations.Registration", b =>
@@ -276,7 +276,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     b.HasIndex("OrganizerId");
 
-                    b.ToTable("Registrations");
+                    b.ToTable("Registrations", (string)null);
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Sponsers.Sponser", b =>
@@ -309,7 +309,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sponsers");
+                    b.ToTable("Sponsers", (string)null);
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", b =>
@@ -648,7 +648,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", b =>
                 {
-                    b.OwnsMany("EventManagment.Core.Domain.Entities._Identity.RefreshToken", "RefreshTokens", b1 =>
+                    b.OwnsMany("EventManagment.Core.Domain.Entities._Identity.ApplicationUser.RefreshTokens#EventManagment.Core.Domain.Entities._Identity.RefreshToken", "RefreshTokens", b1 =>
                         {
                             b1.Property<string>("ApplicationUserId")
                                 .HasColumnType("nvarchar(450)");
@@ -674,7 +674,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                             b1.HasKey("ApplicationUserId", "Id");
 
-                            b1.ToTable("RefreshToken");
+                            b1.ToTable("RefreshToken", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicationUserId");

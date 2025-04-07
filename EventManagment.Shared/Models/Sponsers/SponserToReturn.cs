@@ -1,0 +1,11 @@
+﻿namespace EventManagment.Shared.Models.Sponsers
+{
+    public class SponserToReturn
+    {
+        public int Id { get; set; }
+        public required string Name { get; set; }
+        public required string LogoUrl { get; set; }
+        public required string Website { get; set; }
+        public required string Description { get; set; }
+    }
+}

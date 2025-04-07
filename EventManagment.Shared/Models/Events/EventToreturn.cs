@@ -13,6 +13,7 @@
         public string OrganizerId { get; set; }
         public string? OrganizerName { get; set; }
 
+        public string? NameOfSponser { get; set; }
 
         public string? CategoryName { get; set; }
 

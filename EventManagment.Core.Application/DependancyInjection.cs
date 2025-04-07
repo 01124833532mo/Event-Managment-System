@@ -64,6 +64,12 @@ namespace EventManagment.Core.Application
                 return () => serviceprovider.GetRequiredService<IFeedBackService>();
 
             });
+
+            services.AddScoped(typeof(Func<ISponserService>), (serviceprovider) =>
+            {
+                return () => serviceprovider.GetRequiredService<ISponserService>();
+
+            });
             return services;
         }
 
