@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EventManagment.Core.Application.Abstraction.Bases;
 using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Core.Application.Abstraction.Services.Speakers;
 using EventManagment.Core.Domain.Contracts.Persestence;
@@ -8,7 +9,7 @@ using EventManagment.Shared.Models.Speakers;
 
 namespace EventManagment.Core.Application.Services.Speakers
 {
-    public class SpeakersService(IUnitOfWork unitOfWork, IMapper mapper) : ISpeakerService
+    public class SpeakersService(IUnitOfWork unitOfWork, IMapper mapper) : ResponseHandler, ISpeakerService
     {
         public async Task<Pagination<SpeakerToReturn>> GetAllSpeakersAsync(SpecParams specParams, CancellationToken cancellationToken = default)
         {
@@ -22,6 +23,23 @@ namespace EventManagment.Core.Application.Services.Speakers
 
 
             return new Pagination<SpeakerToReturn>(specParams.PageIndex, specParams.PageSize, count) { Data = data };
+
+        }
+
+        public async Task<Response<SpeakerToReturn>> GetSpeakerAsync(int id, CancellationToken cancellationToken = default)
+        {
+
+            var spec = new GetAllSpeakersSpecification(id);
+
+            var speaker = await unitOfWork.GetRepository<Speaker, int>().GetWithSpecAsync(spec, cancellationToken);
+
+            if (speaker is null)
+                return NotFound<SpeakerToReturn>($"Speaker with id {id} not found");
+
+            var mappedspeaker = mapper.Map<SpeakerToReturn>(speaker);
+
+            return Success(mappedspeaker, 1);
+
 
         }
     }
