@@ -4,7 +4,10 @@ using EventManagment.Core.Domain.Entities.Events;
 using EventManagment.Core.Domain.Entities.FeedBacks;
 using EventManagment.Core.Domain.Entities.Notifications;
 using EventManagment.Core.Domain.Entities.Registrations;
+using EventManagment.Core.Domain.Entities.Sessions;
+using EventManagment.Core.Domain.Entities.Speakers;
 using EventManagment.Core.Domain.Entities.Sponsers;
+using EventManagment.Core.Domain.Entities.Waitlists;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +36,9 @@ namespace EventManagment.Infrastructure.Persistence._Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Sponser> Sponsers { get; set; }
+        public DbSet<Speaker> Speakers { get; set; }
+        public DbSet<Session> Sessions { get; set; }
+        public DbSet<WaitList> WaitLists { get; set; }
 
 
     }

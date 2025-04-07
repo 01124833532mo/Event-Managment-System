@@ -1,9 +1,11 @@
 ﻿using EventManagment.Core.Domain._Identity;
 using EventManagment.Core.Domain.Contracts.Persestence.DbInitializers;
 using EventManagment.Core.Domain.Entities._Identity;
+using EventManagment.Core.Domain.Entities.Speakers;
 using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace EventManagment.Infrastructure.Persistence._Data
 {
@@ -22,11 +24,29 @@ namespace EventManagment.Infrastructure.Persistence._Data
         public async Task SeedAsync()
         {
             var roles = new[] { Roles.Attendee, Roles.Admin, Roles.Organizer };
-            foreach (var role in roles)
-            {
-                await roleManager.CreateAsync(new IdentityRole(role));
 
+            if (!dbContext.Roles.Any())
+            {
+                foreach (var role in roles)
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+
+                }
             }
+
+            if (!dbContext.Speakers.Any())
+            {
+                var seedPath = Path.Combine("..", "EventManagment.Infrastructure.Persistence", "_Data", "Seeds", "Speakers.json");
+                var speakerdata = await File.ReadAllTextAsync(seedPath);
+                var speakers = JsonSerializer.Deserialize<List<Speaker>>(speakerdata);
+
+                if (speakers?.Count > 0)
+                {
+                    await dbContext.Speakers.AddRangeAsync(speakers);
+                    await dbContext.SaveChangesAsync();
+                }
+            }
+
             if (!dbContext.Users.Any())
             {
                 var user = new ApplicationUser
@@ -44,6 +64,7 @@ namespace EventManagment.Infrastructure.Persistence._Data
 
 
             }
+
 
         }
     }

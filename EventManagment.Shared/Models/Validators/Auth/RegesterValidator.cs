@@ -1,4 +1,5 @@
-﻿using EventManagment.Shared.Models.Auth;
+﻿using EventManagment.Shared.Models._Common;
+using EventManagment.Shared.Models.Auth;
 using FluentValidation;
 
 namespace EventManagment.Shared.Models.Validators.Auth

@@ -1,4 +1,4 @@
-﻿namespace EventManagment.Shared.Models
+﻿namespace EventManagment.Shared.Models._Common
 {
     public static class RegexPatterns
     {

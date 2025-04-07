@@ -1,0 +1,38 @@
+[
+  {
+    "Id": 0,
+    "Name": "John Smith",
+    "Bio": "Technology expert with 10 years of experience in software development",
+    "PhotoUrl": "images/Speakers/photo1.jpg"
+  },
+  {
+    "Id": 0,
+    "Name": "Sarah Johnson",
+    "Bio": "Renowned public speaker and leadership coach",
+    "PhotoUrl": "images/Speakers/photo2.jpg"
+  },
+  {
+    "Id": 0,
+    "Name": "Michael Brown",
+    "Bio": "Award-winning author and business strategist",
+    "PhotoUrl": "images/Speakers/profile-picture.jpeg"
+  },
+  {
+    "Id": 0,
+    "Name": "Emily Davis",
+    "Bio": "Environmental activist and sustainability consultant",
+    "PhotoUrl": "images/Speakers/photo3.jpg"
+  },
+  {
+    "Id": 0,
+    "Name": "David Wilson",
+    "Bio": "AI researcher and machine learning specialist",
+    "PhotoUrl": "images/Speakers/photo4.jpg"
+  },
+  {
+    "Id": 0,
+    "Name": "Jessica Taylor",
+    "Bio": "Health and wellness expert with a focus on mental health",
+    "PhotoUrl": "images/Speakers/photo5.jpg"
+  }
+]

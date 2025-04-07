@@ -4,6 +4,7 @@ using EventManagment.Infrastructure.Persistence._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 {
     [DbContext(typeof(EventManagmentDbContext))]
-    partial class EventManagmentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250407150520_Add_Table_Speakers")]
+    partial class Add_Table_Speakers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,9 +41,6 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("JoinDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
@@ -92,9 +92,6 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     b.Property<decimal>("EventRate")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("JoinDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
                         .IsRequired()
@@ -166,9 +163,6 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.Property<int?>("EventId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("JoinDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("LastModifiedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -207,9 +201,6 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("JoinDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
@@ -261,9 +252,6 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.Property<int>("Eventid")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("JoinDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("LastModifiedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -292,62 +280,6 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.HasIndex("OrganizerId");
 
                     b.ToTable("Registrations");
-                });
-
-            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Sessions.Session", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("JoinDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("SpeakerId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("SpeakerId");
-
-                    b.ToTable("Sessions");
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Speakers.Speaker", b =>
@@ -408,53 +340,6 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Sponsers");
-                });
-
-            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Waitlists.WaitList", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AttendeeId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsNotified")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("JoinDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AttendeeId");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("WaitLists");
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", b =>
@@ -791,42 +676,6 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.Navigation("Event");
                 });
 
-            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Sessions.Session", b =>
-                {
-                    b.HasOne("EventManagment.Core.Domain.Entities.Events.Event", "Event")
-                        .WithMany("Sessions")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EventManagment.Core.Domain.Entities.Speakers.Speaker", "Speaker")
-                        .WithMany("Sessions")
-                        .HasForeignKey("SpeakerId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Event");
-
-                    b.Navigation("Speaker");
-                });
-
-            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Waitlists.WaitList", b =>
-                {
-                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.Attendde", "Attendde")
-                        .WithMany("WaitLists")
-                        .HasForeignKey("AttendeeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("EventManagment.Core.Domain.Entities.Events.Event", "Event")
-                        .WithMany("WaitLists")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Attendde");
-
-                    b.Navigation("Event");
-                });
-
             modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.ApplicationUser", b =>
                 {
                     b.OwnsMany("EventManagment.Core.Domain.Entities._Identity.RefreshToken", "RefreshTokens", b1 =>
@@ -927,15 +776,6 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.Navigation("Notifications");
 
                     b.Navigation("Registrations");
-
-                    b.Navigation("Sessions");
-
-                    b.Navigation("WaitLists");
-                });
-
-            modelBuilder.Entity("EventManagment.Core.Domain.Entities.Speakers.Speaker", b =>
-                {
-                    b.Navigation("Sessions");
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Sponsers.Sponser", b =>
@@ -955,8 +795,6 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                     b.Navigation("Feedbacks");
 
                     b.Navigation("Registrations");
-
-                    b.Navigation("WaitLists");
                 });
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.Organizer", b =>
