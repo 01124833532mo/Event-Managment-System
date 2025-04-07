@@ -24,5 +24,11 @@ namespace EventManagment.Apis.Controller.Controllers.Speakers
             var result = await serviceManager.SpeakerService.GetSpeakerAsync(id, cancellationToken);
             return NewResult(result);
         }
+        [HttpDelete("Speaker/{id}")]
+        public async Task<ActionResult> DeleteSpeaker([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.SpeakerService.DeleteSpeakerAsync(id, cancellationToken);
+            return NewResult(result);
+        }
     }
 }

@@ -8,5 +8,7 @@ namespace EventManagment.Core.Application.Abstraction.Services.Speakers
     {
         public Task<Pagination<SpeakerToReturn>> GetAllSpeakersAsync(SpecParams specParams, CancellationToken cancellationToken);
         public Task<Response<SpeakerToReturn>> GetSpeakerAsync(int id, CancellationToken cancellationToken);
+
+        public Task<Response<string>> DeleteSpeakerAsync(int id, CancellationToken cancellationToken);
     }
 }
