@@ -1,6 +1,7 @@
 ﻿using EventManagment.Apis.Controller.Controllers.Base;
 using EventManagment.Core.Application.Abstraction;
 using EventManagment.Core.Application.Abstraction.Bases;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Roles;
 using EventManagment.Shared.Models.Sesstions;
 using Microsoft.AspNetCore.Authorization;
@@ -34,8 +35,13 @@ namespace EventManagment.Apis.Controller.Controllers.Session
             return NewResult(result);
 
         }
+        [HttpGet("GetAllSession")]
+        public async Task<ActionResult<Pagination<SesstionToreturn>>> GetAllSession([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.SesstionService.GetAllSessionAsync(specParams, cancellationToken);
+            return Ok(result);
 
-
+        }
 
     }
 }

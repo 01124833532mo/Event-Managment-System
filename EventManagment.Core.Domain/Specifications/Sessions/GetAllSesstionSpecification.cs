@@ -4,15 +4,12 @@ namespace EventManagment.Core.Domain.Specifications.Sessions
 {
     public class GetAllSesstionSpecification : BaseSpecification<Session, int>
     {
-        public GetAllSesstionSpecification(int? eventId, int? speakerid, int pageSize, int pageIndex)
+        public GetAllSesstionSpecification(int? eventId, int pageSize, int pageIndex)
         : base(
         p =>
-        (!speakerid.HasValue || p.SpeakerId == speakerid.Value)
+        (!eventId.HasValue || p.EventId == eventId.Value))
 
-               &&
-               (!eventId.HasValue || p.EventId == eventId.Value)
 
-               )
         {
             AddIncludes();
 

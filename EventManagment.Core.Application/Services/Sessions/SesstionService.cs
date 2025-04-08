@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EventManagment.Core.Application.Abstraction.Bases;
+using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Core.Application.Abstraction.Services.Sesstions;
 using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities.Events;
@@ -13,7 +14,7 @@ namespace EventManagment.Core.Application.Services.Sesstions
 {
     public class SesstionService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration) : ResponseHandler, ISesstionService
     {
-        public async Task<Response<SesstionToreturn>> CreateSesstionAsync(SesstionDto sesstionDto, CancellationToken cancellationToken)
+        public async Task<Response<SesstionToreturn>> CreateSesstionAsync(SesstionDto sesstionDto, CancellationToken cancellationToken = default)
         {
             var Speaker = await unitOfWork.GetRepository<Speaker, int>().GetAsync(sesstionDto.SpeakerId, cancellationToken);
             if (Speaker is null)
@@ -49,7 +50,7 @@ namespace EventManagment.Core.Application.Services.Sesstions
 
 
 
-        public async Task<Response<SesstionToreturn>> GetSesstionAsync(int id, CancellationToken cancellationToken)
+        public async Task<Response<SesstionToreturn>> GetSesstionAsync(int id, CancellationToken cancellationToken = default)
         {
             var spec = new GetAllSesstionSpecification(id);
             var sesstion = await unitOfWork.GetRepository<Session, int>().GetWithSpecAsync(spec, cancellationToken);
@@ -63,7 +64,7 @@ namespace EventManagment.Core.Application.Services.Sesstions
             return Success(mappedSesstion, 1);
         }
 
-        public async Task<Response<string>> DeleteSesstionAsync(int id, CancellationToken cancellationToken)
+        public async Task<Response<string>> DeleteSesstionAsync(int id, CancellationToken cancellationToken = default)
         {
             var spec = new GetAllSesstionSpecification(id);
             var sesstionrepository = unitOfWork.GetRepository<Session, int>();
@@ -89,6 +90,28 @@ namespace EventManagment.Core.Application.Services.Sesstions
                 return BadRequest<string>("Failed to delete sesstion");
 
             return Success("Deleted successfully", 1);
+        }
+
+        public async Task<Pagination<SesstionToreturn>> GetAllSessionAsync(SpecParams specParams, CancellationToken cancellationToken)
+        {
+            var spec = new GetAllSesstionSpecification(specParams.EventId, specParams.PageSize, specParams.PageIndex);
+
+            var sesstions = await unitOfWork.GetRepository<Session, int>().GetAllWithSpecAsync(spec);
+
+            var countdata = new getSessionCountSpecification(specParams.EventId);
+            var count = await unitOfWork.GetRepository<Session, int>().GetCountAsync(countdata, cancellationToken);
+
+            var data = mapper.Map<IEnumerable<SesstionToreturn>>(sesstions);
+
+            foreach (var item in data)
+            {
+                item.SpeakerPhotoUrl = configuration["Urls:ApiBaseUrl"] + "/" + item.SpeakerPhotoUrl;
+            }
+
+            return new Pagination<SesstionToreturn>(specParams.PageIndex, specParams.PageSize, count)
+            {
+                Data = data
+            };
         }
     }
 }
