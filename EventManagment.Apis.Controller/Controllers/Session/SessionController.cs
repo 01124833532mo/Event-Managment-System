@@ -27,6 +27,14 @@ namespace EventManagment.Apis.Controller.Controllers.Session
             return NewResult(result);
 
         }
+        [HttpDelete("DeleteSession/{id}")]
+        public async Task<ActionResult<Response<string>>> DeleteSession([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.SesstionService.DeleteSesstionAsync(id, cancellationToken);
+            return NewResult(result);
+
+        }
+
 
 
     }

@@ -47,6 +47,8 @@ namespace EventManagment.Core.Application.Services.Sesstions
 
         }
 
+
+
         public async Task<Response<SesstionToreturn>> GetSesstionAsync(int id, CancellationToken cancellationToken)
         {
             var spec = new GetAllSesstionSpecification(id);
@@ -59,6 +61,34 @@ namespace EventManagment.Core.Application.Services.Sesstions
             mappedSesstion.SpeakerPhotoUrl = configuration["Urls:ApiBaseUrl"] + "/" + sesstion.Speaker!.PhotoUrl;
 
             return Success(mappedSesstion, 1);
+        }
+
+        public async Task<Response<string>> DeleteSesstionAsync(int id, CancellationToken cancellationToken)
+        {
+            var spec = new GetAllSesstionSpecification(id);
+            var sesstionrepository = unitOfWork.GetRepository<Session, int>();
+
+            var sesstion = await sesstionrepository.GetWithSpecAsync(spec, cancellationToken);
+
+            if (sesstion is null)
+                return NotFound<string>($"Sesstion with id {id} not found");
+            try
+            {
+
+                sesstionrepository.Delete(sesstion);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest<string>(ex.Message);
+
+            }
+
+            var result = unitOfWork.CompleteAsync().Result > 0;
+
+            if (!result)
+                return BadRequest<string>("Failed to delete sesstion");
+
+            return Success("Deleted successfully", 1);
         }
     }
 }
