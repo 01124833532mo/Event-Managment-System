@@ -3,12 +3,14 @@ using EventManagment.Core.Domain.Entities.Categories;
 using EventManagment.Core.Domain.Entities.Events;
 using EventManagment.Core.Domain.Entities.FeedBacks;
 using EventManagment.Core.Domain.Entities.Registrations;
+using EventManagment.Core.Domain.Entities.Sessions;
 using EventManagment.Core.Domain.Entities.Speakers;
 using EventManagment.Core.Domain.Entities.Sponsers;
 using EventManagment.Shared.Models.Categories;
 using EventManagment.Shared.Models.Events;
 using EventManagment.Shared.Models.FeedBacks;
 using EventManagment.Shared.Models.Registrations;
+using EventManagment.Shared.Models.Sesstions;
 using EventManagment.Shared.Models.Speakers;
 using EventManagment.Shared.Models.Sponsers;
 
@@ -21,6 +23,11 @@ namespace EventManagment.Core.Application.Mapping
             CreateMap<EventDto, Event>().ReverseMap();
 
             CreateMap<CreateSponserDto, Sponser>();
+            CreateMap<SesstionDto, Session>();
+            CreateMap<Session, SesstionToreturn>()
+                .ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title))
+                .ForMember(dest => dest.SpeakerName, opt => opt.MapFrom(src => src.Speaker!.Name))
+                .ForMember(dest => dest.SpeakerPhotoUrl, opt => opt.MapFrom(src => src.Speaker!.PhotoUrl));
 
 
 
