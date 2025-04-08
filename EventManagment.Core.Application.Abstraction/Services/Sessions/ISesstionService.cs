@@ -7,6 +7,7 @@ namespace EventManagment.Core.Application.Abstraction.Services.Sesstions
     {
 
         public Task<Response<SesstionToreturn>> CreateSesstionAsync(SesstionDto sesstionDto, CancellationToken cancellationToken);
+        public Task<Response<SesstionToreturn>> GetSesstionAsync(int id, CancellationToken cancellationToken);
 
 
     }

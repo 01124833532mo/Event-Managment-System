@@ -5,6 +5,7 @@ using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities.Events;
 using EventManagment.Core.Domain.Entities.Sessions;
 using EventManagment.Core.Domain.Entities.Speakers;
+using EventManagment.Core.Domain.Specifications.Sessions;
 using EventManagment.Shared.Models.Sesstions;
 using Microsoft.Extensions.Configuration;
 
@@ -44,6 +45,20 @@ namespace EventManagment.Core.Application.Services.Sesstions
             mappedSesstion.SpeakerPhotoUrl = configuration["Urls:ApiBaseUrl"] + "/" + Speaker.PhotoUrl;
             return Success(mappedSesstion);
 
+        }
+
+        public async Task<Response<SesstionToreturn>> GetSesstionAsync(int id, CancellationToken cancellationToken)
+        {
+            var spec = new GetAllSesstionSpecification(id);
+            var sesstion = await unitOfWork.GetRepository<Session, int>().GetWithSpecAsync(spec, cancellationToken);
+            if (sesstion is null)
+            {
+                return NotFound<SesstionToreturn>($"Sesstion not found with {id}");
+            }
+            var mappedSesstion = mapper.Map<SesstionToreturn>(sesstion);
+            mappedSesstion.SpeakerPhotoUrl = configuration["Urls:ApiBaseUrl"] + "/" + sesstion.Speaker!.PhotoUrl;
+
+            return Success(mappedSesstion, 1);
         }
     }
 }
