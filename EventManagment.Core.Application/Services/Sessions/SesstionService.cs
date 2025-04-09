@@ -1,18 +1,24 @@
 ﻿using AutoMapper;
 using EventManagment.Core.Application.Abstraction.Bases;
 using EventManagment.Core.Application.Abstraction.Common;
+using EventManagment.Core.Application.Abstraction.Services.Emails;
 using EventManagment.Core.Application.Abstraction.Services.Sesstions;
 using EventManagment.Core.Domain.Contracts.Persestence;
+using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Core.Domain.Entities.Events;
 using EventManagment.Core.Domain.Entities.Sessions;
 using EventManagment.Core.Domain.Entities.Speakers;
 using EventManagment.Core.Domain.Specifications.Sessions;
 using EventManagment.Shared.Models.Sesstions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 
 namespace EventManagment.Core.Application.Services.Sesstions
 {
-    public class SesstionService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration) : ResponseHandler, ISesstionService
+    public class SesstionService(IUnitOfWork unitOfWork,
+        IMapper mapper, IConfiguration configuration,
+        UserManager<ApplicationUser> userManager,
+        IEmailService emailService) : ResponseHandler, ISesstionService
     {
         public async Task<Response<SesstionToreturn>> CreateSesstionAsync(SesstionDto sesstionDto, CancellationToken cancellationToken = default)
         {
@@ -44,6 +50,30 @@ namespace EventManagment.Core.Application.Services.Sesstions
 
             var mappedSesstion = mapper.Map<SesstionToreturn>(sesstion);
             mappedSesstion.SpeakerPhotoUrl = configuration["Urls:ApiBaseUrl"] + "/" + Speaker.PhotoUrl;
+
+            //var allUsers = await userManager.Users.Include(x => x.Registrations).ToListAsync(cancellationToken);
+            //var AttendeesOfEvent = allUsers.Where(x => x.Registrations.Any(r => r.Eventid == sesstionDto.EventId)).ToList();
+
+
+
+            //foreach (var attendee in AttendeesOfEvent)
+            //{
+            //    var email = new Email()
+            //    {
+            //        To = attendee.Email ?? "",
+            //        Subject = "New Session Created",
+            //        Body = $"A new session has been created for the event {Event.Title}.\n" +
+            //               $"Session Title: {sesstion.Title}\n" +
+            //               $"Speaker: {Speaker.Name}\n" +
+            //               $"Start Time: {sesstion.StartTime}\n" +
+            //               $"End Time: {sesstion.EndTime}\n"
+
+
+            //    };
+            //    BackgroundJob.Enqueue(() => emailService.SendEmail(email));
+
+            //}
+
             return Success(mappedSesstion);
 
         }
