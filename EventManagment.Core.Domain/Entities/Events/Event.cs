@@ -31,18 +31,18 @@ namespace EventManagment.Core.Domain.Entities.Events
 
         public EventStatus Status { get; set; } = EventStatus.scheduled;
 
-        public string? OrganizerId { get; set; }
+        public string OrganizerId { get; set; }
         public virtual Organizer Organizer { get; set; }
         public virtual ICollection<Registration> Registrations { get; set; } = new HashSet<Registration>();
         public virtual ICollection<Notification> Notifications { get; set; } = new HashSet<Notification>();
 
-        public int? Categoryid { get; set; }
+        public int Categoryid { get; set; }
 
         public virtual Category Category { get; set; }
 
 
 
-        public virtual ICollection<Feedback>? Feedbacks { get; set; } = new HashSet<Feedback>();
+        public virtual ICollection<Feedback> Feedbacks { get; set; } = new HashSet<Feedback>();
 
 
         public int? SponserId { get; set; }

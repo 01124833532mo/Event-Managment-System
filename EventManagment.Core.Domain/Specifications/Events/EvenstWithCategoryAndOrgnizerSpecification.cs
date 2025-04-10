@@ -57,7 +57,6 @@ namespace EventManagment.Core.Domain.Specifications.Events
         {
             base.AddIncludes();
             Includes.Add(p => p.Category!);
-            Includes.Add(p => p.Organizer!);
         }
     }
 }

@@ -4,6 +4,7 @@ using EventManagment.Infrastructure.Persistence._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 {
     [DbContext(typeof(EventManagmentDbContext))]
-    partial class EventManagmentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250410212352_Solve_Some_Configuration")]
+    partial class Solve_Some_Configuration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,7 +71,11 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Categoryid")
+                    b.Property<string>("AttenddeId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("Categoryid")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("CreatedBy")
@@ -133,6 +140,8 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
                         .HasColumnType("nvarchar");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AttenddeId");
 
                     b.HasIndex("Categoryid");
 
@@ -717,6 +726,10 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities.Events.Event", b =>
                 {
+                    b.HasOne("EventManagment.Core.Domain.Entities._Identity.Attendde", null)
+                        .WithMany("Events")
+                        .HasForeignKey("AttenddeId");
+
                     b.HasOne("EventManagment.Core.Domain.Entities.Categories.Category", "Category")
                         .WithMany("Events")
                         .HasForeignKey("Categoryid")
@@ -958,6 +971,8 @@ namespace EventManagment.Infrastructure.Persistence._Data.Migrations
 
             modelBuilder.Entity("EventManagment.Core.Domain.Entities._Identity.Attendde", b =>
                 {
+                    b.Navigation("Events");
+
                     b.Navigation("Feedbacks");
 
                     b.Navigation("Registrations");

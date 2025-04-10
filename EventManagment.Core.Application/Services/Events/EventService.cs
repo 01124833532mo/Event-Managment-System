@@ -40,7 +40,13 @@ namespace EventManagment.Core.Application.Services.Events
                 logger.LogWarning("Event Not Found With This Id");
                 return NotFound<EventToreturn>(id, "Event Not Found With This Id");
             };
+            var organizername = await userManager.FindByIdAsync(Event.OrganizerId);
+            if (organizername == null)
+            {
+                throw new BadRequestExeption("Organizer not found");
+            }
             var mappedEvent = _mapper.Map<EventToreturn>(Event);
+            mappedEvent.OrganizerName = organizername.FullName;
             logger.LogInformation("Event Found And Mapped");
 
 
@@ -58,7 +64,17 @@ namespace EventManagment.Core.Application.Services.Events
 
             var Events = await _unitOfWork.GetRepository<Event, int>().GetAllWithSpecAsync(spec);
 
+
             var data = _mapper.Map<IEnumerable<EventToreturn>>(Events);
+            foreach (var item in data)
+            {
+                var organizername = await userManager.FindByIdAsync(item.OrganizerId);
+                if (organizername == null)
+                {
+                    throw new BadRequestExeption("Organizer not found");
+                }
+                item.OrganizerName = organizername.FullName;
+            }
             var countSpec = new EventWithFilterationForCountSpecifications(specParams.Orgnizerid, specParams.CategoryId, specParams.Search);
             var count = await _unitOfWork.GetRepository<Event, int>().GetCountAsync(countSpec, cancellationToken);
 

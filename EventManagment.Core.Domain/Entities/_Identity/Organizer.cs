@@ -8,7 +8,7 @@ namespace EventManagment.Core.Domain.Entities._Identity
         public string? Address { get; set; }
         public string? CompanyName { get; set; }
 
-        public virtual ICollection<Event> Events { get; set; } = new List<Event>();
+        public virtual ICollection<Event> Events { get; set; } = new HashSet<Event>();
 
     }
 }
