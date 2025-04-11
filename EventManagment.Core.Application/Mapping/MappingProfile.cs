@@ -6,6 +6,7 @@ using EventManagment.Core.Domain.Entities.Registrations;
 using EventManagment.Core.Domain.Entities.Sessions;
 using EventManagment.Core.Domain.Entities.Speakers;
 using EventManagment.Core.Domain.Entities.Sponsers;
+using EventManagment.Core.Domain.Entities.Waitlists;
 using EventManagment.Shared.Models.Categories;
 using EventManagment.Shared.Models.Events;
 using EventManagment.Shared.Models.FeedBacks;
@@ -13,6 +14,7 @@ using EventManagment.Shared.Models.Registrations;
 using EventManagment.Shared.Models.Sesstions;
 using EventManagment.Shared.Models.Speakers;
 using EventManagment.Shared.Models.Sponsers;
+using EventManagment.Shared.Models.WaitList;
 
 namespace EventManagment.Core.Application.Mapping
 {
@@ -29,6 +31,10 @@ namespace EventManagment.Core.Application.Mapping
                 .ForMember(dest => dest.SpeakerName, opt => opt.MapFrom(src => src.Speaker!.Name))
                 .ForMember(dest => dest.SpeakerPhotoUrl, opt => opt.MapFrom(src => src.Speaker!.PhotoUrl));
 
+
+            CreateMap<WaitList, WaitListToReturn>()
+            .ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title))
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Attendde!.FullName));
 
 
             CreateMap<Sponser, SponserToReturn>()
