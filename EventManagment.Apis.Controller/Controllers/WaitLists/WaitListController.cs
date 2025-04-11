@@ -1,5 +1,6 @@
 ﻿using EventManagment.Apis.Controller.Controllers.Base;
 using EventManagment.Core.Application.Abstraction;
+using EventManagment.Core.Application.Abstraction.Bases;
 using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Roles;
 using EventManagment.Shared.Models.WaitList;
@@ -17,6 +18,12 @@ namespace EventManagment.Apis.Controller.Controllers.WaitLists
         {
             var products = await serviceManager.WaitListService.GetWalitListAsync(specParams, cancellationToken);
             return Ok(products);
+        }
+        [HttpGet("GetWaitList/{id}")]
+        public async Task<ActionResult<Response<WaitListToReturn>>> GetWaitList([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.WaitListService.GetWaitListByIdAsync(id, cancellationToken);
+            return NewResult(result);
         }
 
     }

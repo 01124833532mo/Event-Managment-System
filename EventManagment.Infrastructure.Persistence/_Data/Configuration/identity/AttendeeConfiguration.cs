@@ -18,6 +18,8 @@ namespace EventManagment.Infrastructure.Persistence._Data.Configuration.identity
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
 
+
+
         }
     }
 }
