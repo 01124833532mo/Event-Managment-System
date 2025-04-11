@@ -11,6 +11,35 @@ namespace EventManagment.Core.Application.Services.WaitLists
 {
     public class WaitListService(IUnitOfWork unitOfWork, IMapper mapper) : ResponseHandler, IWaitListService
     {
+        public async Task<Response<bool>> AddToWaitListAsync(int eventId, string attendeeId, CancellationToken cancellationToken)
+        {
+            var waitlist = new WaitList
+            {
+                EventId = eventId,
+                AttendeeId = attendeeId,
+                IsNotified = false
+            };
+            var waitlistrepo = unitOfWork.GetRepository<WaitList, int>();
+
+            try
+            {
+                await waitlistrepo.AddAsync(waitlist);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest<bool>($"Error Occured While Adding To Wait List {ex.Message}");
+            }
+            var complete = await unitOfWork.CompleteAsync() > 0;
+            if (!complete)
+                return BadRequest<bool>("Error Occured While Adding To Wait List");
+
+
+            return Success(true, "Added To Wait List Successfully");
+
+
+        }
+
         public async Task<Response<WaitListToReturn>> GetWaitListByIdAsync(int id, CancellationToken cancellationToken)
         {
             var waitListSpec = new WaitListPaginatedSpecification(id);

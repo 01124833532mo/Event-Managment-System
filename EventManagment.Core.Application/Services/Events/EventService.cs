@@ -17,7 +17,6 @@ using EventManagment.Shared.Models.Events;
 using EventManagment.Shared.Models.Roles;
 using Hangfire;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace EventManagment.Core.Application.Services.Events
@@ -65,11 +64,17 @@ namespace EventManagment.Core.Application.Services.Events
 
             var Events = await _unitOfWork.GetRepository<Event, int>().GetAllWithSpecAsync(spec);
 
-            var responedevent = await Events.AsQueryable().Include(x => x.Organizer).ToListAsync();
 
-
-
-            var data = _mapper.Map<IEnumerable<EventToreturn>>(responedevent);
+            var data = _mapper.Map<IEnumerable<EventToreturn>>(Events);
+            foreach (var item in data)
+            {
+                var organizername = await userManager.FindByIdAsync(item.OrganizerId);
+                if (organizername == null)
+                {
+                    throw new BadRequestExeption("Organizer not found");
+                }
+                item.OrganizerName = organizername.FullName;
+            }
 
             var countSpec = new EventWithFilterationForCountSpecifications(specParams.Orgnizerid, specParams.CategoryId, specParams.Search);
             var count = await _unitOfWork.GetRepository<Event, int>().GetCountAsync(countSpec, cancellationToken);

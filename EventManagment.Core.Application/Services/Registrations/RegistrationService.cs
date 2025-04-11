@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using EventManagment.Core.Application.Abstraction;
 using EventManagment.Core.Application.Abstraction.Bases;
 using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Core.Application.Abstraction.Common.Contracts.Infrastracture;
 using EventManagment.Core.Application.Abstraction.Services.Emails;
 using EventManagment.Core.Application.Abstraction.Services.Registrations;
+using EventManagment.Core.Application.Abstraction.Services.WaitLists;
 using EventManagment.Core.Domain.Contracts.Persestence;
 using EventManagment.Core.Domain.Entities._Identity;
 using EventManagment.Core.Domain.Entities.Events;
@@ -25,7 +27,9 @@ namespace EventManagment.Core.Application.Services.Registrations
         ILogger<RegistrationService> _logger,
         UserManager<ApplicationUser> userManager,
         IPaymentService paymentService,
-        IEmailService emailService) : ResponseHandler, IRegistrationService
+        IEmailService emailService,
+        ILoggedInUserService loggedInUserService,
+        IWaitListService waitListService) : ResponseHandler, IRegistrationService
     {
 
 
@@ -83,15 +87,37 @@ namespace EventManagment.Core.Application.Services.Registrations
         {
             _logger.LogInformation("CreateRegisterAsync called");
 
-            var checkcategoryexsist = await _unitOfWork.GetRepository<Event, int>().GetAsync(createRegisterDto.Eventid, cancellationToken);
-            if (checkcategoryexsist is null) return NotFound<RegisterToReturn>(createRegisterDto.Eventid, "Event Not Exsist with This Id");
+            var checkeventexsist = await _unitOfWork.GetRepository<Event, int>().GetAsync(createRegisterDto.Eventid, cancellationToken);
+            if (checkeventexsist is null) return NotFound<RegisterToReturn>(createRegisterDto.Eventid, "Event Not Exsist with This Id");
 
-            else if (checkcategoryexsist.Data < DateTime.Now) return BadRequest<RegisterToReturn>("Event Date is Passed");
+            else if (checkeventexsist.Data < DateTime.Now) return BadRequest<RegisterToReturn>("Event Date is Passed");
 
-            else if (checkcategoryexsist.Status == EventStatus.canceled) return BadRequest<RegisterToReturn>("Event is Canceled");
-            else if (checkcategoryexsist.Status == EventStatus.completed) return BadRequest<RegisterToReturn>("Event is Completed");
+            else if (checkeventexsist.Status == EventStatus.canceled) return BadRequest<RegisterToReturn>("Event is Canceled");
+            else if (checkeventexsist.Status == EventStatus.completed) return BadRequest<RegisterToReturn>("Event is Completed");
 
-            else if (checkcategoryexsist.MaxAttendees <= checkcategoryexsist.Registrations.Count) return BadRequest<RegisterToReturn>("Event is Full");
+            else if (checkeventexsist.MaxAttendees <= checkeventexsist.Registrations.Count)
+            {
+                var attendeeid = loggedInUserService.UserId;
+                var waitlist = await waitListService.AddToWaitListAsync(createRegisterDto.Eventid, attendeeid!, cancellationToken);
+                if (waitlist.Succeeded)
+                {
+
+                    RecurringJob.AddOrUpdate(
+                                  $"WaitListCheck_{createRegisterDto.Eventid}_{attendeeid}",
+                                  () => CheckForAvailableSpotAsync(createRegisterDto.Eventid, attendeeid!, cancellationToken),
+                                  "*/5 * * * *"
+                              );
+
+                    return BadRequest<RegisterToReturn>(
+                        "Event is full. You have been added to the waitlist. " +
+                        "We will notify you if a spot becomes available.");
+                }
+                else if (!waitlist.Succeeded)
+                {
+                    return BadRequest<RegisterToReturn>("Event is Full, Error Occured While Adding To Wait List");
+                }
+
+            }
 
             var repo = _unitOfWork.GetRepository<Registration, int>();
             var register = _mapper.Map<Registration>(createRegisterDto);
@@ -113,7 +139,30 @@ namespace EventManagment.Core.Application.Services.Registrations
                 return BadRequest<RegisterToReturn>("Failed to create register");
             }
 
-            var Attendee = await userManager.FindByIdAsync(register.AttendeeId);
+            var Attendee = await userManager.FindByIdAsync(register.AttendeeId) as Attendde;
+
+
+            if (Attendee!.WaitLists?.Any(x => !x.IsNotified && x.EventId == createRegisterDto.Eventid) ?? false)
+            {
+                var unnotifiedEntries = Attendee.WaitLists
+                    .Where(x => !x.IsNotified && x.EventId == createRegisterDto.Eventid)
+                    .ToList();
+
+                foreach (var entry in unnotifiedEntries)
+                {
+                    entry.IsNotified = true;
+
+                }
+                var chekcomplete = await _unitOfWork.CompleteAsync() > 0;
+                if (!chekcomplete)
+                {
+                    _logger.LogWarning("CreateRegisterAsync failed");
+                    return BadRequest<RegisterToReturn>("Failed to create register");
+                }
+
+
+
+            }
 
             if (Attendee is null)
             {
@@ -145,7 +194,7 @@ namespace EventManagment.Core.Application.Services.Registrations
 
             RecurringJob.AddOrUpdate(
                   $"EventNotification_{register.Id}", // id 
-                  () => SendEventNotificationAsync(register.Id, checkcategoryexsist.Data, Attendee.Email!),
+                  () => SendEventNotificationAsync(register.Id, checkeventexsist.Data, Attendee.Email!),
                   "0 0 */5 * *" // Every 5 days
               );
 
@@ -206,5 +255,43 @@ namespace EventManagment.Core.Application.Services.Registrations
 
 
         }
+        public async Task CheckForAvailableSpotAsync(int eventId, string attendeeId, CancellationToken cancellationToken = default)
+        {
+            var eventEntity = await _unitOfWork.GetRepository<Event, int>()
+                .GetAsync(eventId, cancellationToken);
+
+            if (eventEntity == null)
+            {
+                _logger.LogWarning($"Event {eventId} not found. Removing waitlist check job.");
+                RecurringJob.RemoveIfExists($"WaitListCheck_{eventId}_{attendeeId}");
+                return;
+            }
+
+            bool hasAvailableSpots = eventEntity.MaxAttendees > eventEntity.Registrations.Count;
+
+            if (!hasAvailableSpots)
+                return;
+
+
+            var user = await userManager.FindByIdAsync(attendeeId);
+            if (user?.Email != null)
+            {
+                var email = new Email
+                {
+                    Subject = "🚀 A Spot Just Opened Up!",
+                    Body = $"A spot is now available for event '{eventEntity.Title}'. " +
+                           $"Hurry and register before it's gone!\n\n" +
+                           $"Event Date: {eventEntity.Data.ToShortDateString()}",
+                    To = user.Email
+                };
+
+                BackgroundJob.Enqueue(() => emailService.SendEmail(email));
+            }
+
+            RecurringJob.RemoveIfExists($"WaitListCheck_{eventId}_{attendeeId}");
+        }
+
+
     }
+
 }

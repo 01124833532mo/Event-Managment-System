@@ -9,5 +9,6 @@ namespace EventManagment.Core.Application.Abstraction.Services.WaitLists
         public Task<Pagination<WaitListToReturn>> GetWalitListAsync(SpecParams spec, CancellationToken cancellationToken);
         public Task<Response<WaitListToReturn>> GetWaitListByIdAsync(int id, CancellationToken cancellationToken);
 
+        public Task<Response<bool>> AddToWaitListAsync(int eventId, string attendeeId, CancellationToken cancellationToken);
     }
 }

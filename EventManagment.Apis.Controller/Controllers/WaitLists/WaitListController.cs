@@ -25,6 +25,11 @@ namespace EventManagment.Apis.Controller.Controllers.WaitLists
             var result = await serviceManager.WaitListService.GetWaitListByIdAsync(id, cancellationToken);
             return NewResult(result);
         }
-
+        [HttpPost("AddToWaitList")]
+        public async Task<ActionResult<Response<bool>>> AddToWaitList([FromQuery] int eventId, [FromQuery] string attendeeId, CancellationToken cancellationToken)
+        {
+            var result = await serviceManager.WaitListService.AddToWaitListAsync(eventId, attendeeId, cancellationToken);
+            return NewResult(result);
+        }
     }
 }
