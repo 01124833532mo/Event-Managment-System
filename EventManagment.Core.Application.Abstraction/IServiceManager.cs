@@ -6,6 +6,7 @@ using EventManagment.Core.Application.Abstraction.Services.Registrations;
 using EventManagment.Core.Application.Abstraction.Services.Sesstions;
 using EventManagment.Core.Application.Abstraction.Services.Speakers;
 using EventManagment.Core.Application.Abstraction.Services.Sponsers;
+using EventManagment.Core.Application.Abstraction.Services.WaitLists;
 
 namespace EventManagment.Core.Application.Abstraction
 {
@@ -19,5 +20,6 @@ namespace EventManagment.Core.Application.Abstraction
         public ISponserService SponserService { get; }
         public ISpeakerService SpeakerService { get; }
         public ISesstionService SesstionService { get; }
+        public IWaitListService WaitListService { get; }
     }
 }
