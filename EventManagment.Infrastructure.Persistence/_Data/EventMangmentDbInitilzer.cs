@@ -57,6 +57,7 @@ namespace EventManagment.Infrastructure.Persistence._Data
                     PhoneNumber = "01029442023",
                     Types = Types.Admin,
 
+
                 };
 
                 await userManager.CreateAsync(user, "01124833532");

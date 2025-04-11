@@ -7,7 +7,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Configuration.Data
 {
     internal class CategoryConfigurations : BaseAuditableEntityConfigurations<Category, int>
     {
-        public void Configure(EntityTypeBuilder<Category> builder)
+        public override void Configure(EntityTypeBuilder<Category> builder)
         {
 
 

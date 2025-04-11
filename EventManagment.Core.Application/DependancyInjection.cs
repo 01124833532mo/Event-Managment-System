@@ -5,8 +5,10 @@ using EventManagment.Core.Application.Abstraction.Services.Emails;
 using EventManagment.Core.Application.Abstraction.Services.Events;
 using EventManagment.Core.Application.Abstraction.Services.FeedBacks;
 using EventManagment.Core.Application.Abstraction.Services.Registrations;
+using EventManagment.Core.Application.Abstraction.Services.Sesstions;
 using EventManagment.Core.Application.Abstraction.Services.Speakers;
 using EventManagment.Core.Application.Abstraction.Services.Sponsers;
+using EventManagment.Core.Application.Abstraction.Services.WaitLists;
 using EventManagment.Core.Application.Mapping;
 using EventManagment.Core.Application.Services.Auth;
 using EventManagment.Core.Application.Services.Categories;
@@ -14,8 +16,10 @@ using EventManagment.Core.Application.Services.Emails;
 using EventManagment.Core.Application.Services.Events;
 using EventManagment.Core.Application.Services.FeedBacks;
 using EventManagment.Core.Application.Services.Registrations;
+using EventManagment.Core.Application.Services.Sesstions;
 using EventManagment.Core.Application.Services.Speakers;
 using EventManagment.Core.Application.Services.Sponsers;
+using EventManagment.Core.Application.Services.WaitLists;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,6 +37,8 @@ namespace EventManagment.Core.Application
             services.AddScoped(typeof(IFeedBackService), typeof(FeedBackService));
             services.AddScoped(typeof(ISponserService), typeof(SponserService));
             services.AddScoped(typeof(ISpeakerService), typeof(SpeakersService));
+            services.AddScoped(typeof(ISesstionService), typeof(SesstionService));
+            services.AddScoped(typeof(IWaitListService), typeof(WaitListService));
             services.AddTransient(typeof(IEmailService), typeof(EmailService));
 
 
@@ -77,6 +83,18 @@ namespace EventManagment.Core.Application
             services.AddScoped(typeof(Func<ISpeakerService>), (serviceprovider) =>
             {
                 return () => serviceprovider.GetRequiredService<ISpeakerService>();
+
+            });
+
+            services.AddScoped(typeof(Func<ISesstionService>), (serviceprovider) =>
+            {
+                return () => serviceprovider.GetRequiredService<ISesstionService>();
+
+            });
+
+            services.AddScoped(typeof(Func<IWaitListService>), (serviceprovider) =>
+            {
+                return () => serviceprovider.GetRequiredService<IWaitListService>();
 
             });
             return services;

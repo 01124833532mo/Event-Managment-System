@@ -8,7 +8,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Configuration.Data
 {
     internal class RegistrationConfigurations : BaseAuditableEntityConfigurations<Registration, int>
     {
-        public void Configure(EntityTypeBuilder<Registration> builder)
+        public override void Configure(EntityTypeBuilder<Registration> builder)
         {
 
             base.Configure(builder);

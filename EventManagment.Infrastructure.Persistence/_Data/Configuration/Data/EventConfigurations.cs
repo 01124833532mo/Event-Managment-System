@@ -8,7 +8,7 @@ namespace EventManagment.Infrastructure.Persistence._Data.Configuration.Data
 {
     internal class EventConfigurations : BaseAuditableEntityConfigurations<Event, int>
     {
-        public void Configure(EntityTypeBuilder<Event> builder)
+        public override void Configure(EntityTypeBuilder<Event> builder)
         {
 
 
@@ -68,7 +68,6 @@ namespace EventManagment.Infrastructure.Persistence._Data.Configuration.Data
             builder.HasMany(p => p.Feedbacks)
                     .WithOne(p => p.Event)
                     .HasForeignKey(p => p.EventId)
-                    .IsRequired(false)
                     .OnDelete(DeleteBehavior.Cascade);
 
         }

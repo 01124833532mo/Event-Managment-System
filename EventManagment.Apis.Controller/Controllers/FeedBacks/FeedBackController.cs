@@ -2,7 +2,6 @@
 using EventManagment.Core.Application.Abstraction;
 using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.FeedBacks;
-using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +10,6 @@ namespace EventManagment.Apis.Controller.Controllers.FeedBacks
     [Authorize]
     public class FeedBackController(IServiceManager serviceManager) : BaseApiController
     {
-        [Authorize(Roles = Roles.Attendee)]
         [HttpPost("CreateFeedBack")]
         public async Task<ActionResult> CreateFeedBack([FromBody] CreateFeedBackDto createFeedBackDto, CancellationToken cancellationToken)
         {
@@ -20,7 +18,6 @@ namespace EventManagment.Apis.Controller.Controllers.FeedBacks
 
         }
 
-        [Authorize(Roles = Roles.Attendee)]
         [HttpDelete("RemoveFeedBack/{id}")]
         public async Task<ActionResult> RemoveFeedBack([FromRoute] int id, CancellationToken cancellationToken)
         {
@@ -42,7 +39,6 @@ namespace EventManagment.Apis.Controller.Controllers.FeedBacks
             return NewResult(result);
 
         }
-        [Authorize(Roles = Roles.Attendee)]
         [HttpGet("Get-FeedBack-To-Specific-Attendde")]
         public async Task<ActionResult<Pagination<FeedBackToRetuen>>> GetAllFeedBackForSpecificAttendee([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
         {

@@ -14,7 +14,6 @@ namespace EventManagment.Core.Domain.Specifications.Events
         private protected override void AddIncludes()
         {
             Includes.Add(x => x.Category);
-            Includes.Add(x => x.Organizer);
         }
     }
 }
