@@ -2,6 +2,7 @@
 using EventManagment.Infrastructure.AttachementService;
 using EventManagment.Infrastructure.Caching_Service;
 using EventManagment.Infrastructure.Payment_Service;
+using EventManagment.Shared.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
@@ -24,6 +25,8 @@ namespace EventManagment.Infrastructure
                 return multiplexer;
 
             });
+
+            services.Configure<RedisSettings>(configuration.GetSection("RedisSettings"));
 
 
             return services;
