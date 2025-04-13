@@ -1,11 +1,14 @@
 ﻿using EventManagment.Apis.Controller.Controllers.Base;
 using EventManagment.Core.Application.Abstraction;
 using EventManagment.Shared.Models.Auth;
+using EventManagment.Shared.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventManagment.Apis.Controller.Controllers.DashBoard
 {
+    [Authorize(Roles = Roles.Admin)]
+
     public class DashBoardController(IServiceManager serviceManager) : BaseApiController
     {
 
@@ -36,37 +39,34 @@ namespace EventManagment.Apis.Controller.Controllers.DashBoard
             return Ok(result);
         }
 
-        [AllowAnonymous]
-        [HttpGet("GetUsers")]
+        [HttpGet("GetAttendes")]
         public async Task<ActionResult> GetUsers()
         {
             var result = await serviceManager.AuthService.GetAllAttendences();
             return Ok(result);
         }
 
-        [HttpPost("CreateUser")]
+        [HttpPost("CreateAttende")]
         public async Task<ActionResult<BaseToReturn>> CreateUser(CreateAttendenceDro createUserDro)
         {
             var result = await serviceManager.AuthService.CreateAttendences(createUserDro);
             return Ok(result);
         }
-        [AllowAnonymous]
-        [HttpGet("GetUser/{id}")]
+        [HttpGet("GetAttende/{id}")]
         public async Task<ActionResult<AttendentRoleViewModel>> GetUser([FromRoute] string id)
         {
             var result = await serviceManager.AuthService.GetAttendence(id);
             return Ok(result);
         }
 
-        [HttpDelete("DeleteUser/{id}")]
+        [HttpDelete("DeleteAttende/{id}")]
         public async Task<ActionResult<string>> DeleteUser([FromRoute] string id)
         {
             var result = await serviceManager.AuthService.DeleteAttendence(id);
             return Ok(result);
         }
 
-        [AllowAnonymous]
-        [HttpGet("GetTechnicals")]
+        [HttpGet("GetOrganizers")]
         public async Task<ActionResult> GetOrganizers()
         {
             var result = await serviceManager.AuthService.GetAllOrganizers();

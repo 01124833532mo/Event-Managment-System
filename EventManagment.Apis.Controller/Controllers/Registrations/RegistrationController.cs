@@ -11,6 +11,8 @@ namespace EventManagment.Apis.Controller.Controllers.Registrations
     [Authorize]
     public class RegistrationController(IServiceManager serviceManager) : BaseApiController
     {
+        [Authorize(Roles = Roles.Attendee)]
+
         [HttpPost("CreateRegistration")]
         public async Task<ActionResult> CreateRegistraction([FromBody] CreateRegisterDto createRegisterDto, CancellationToken cancellationToken)
         {
@@ -19,7 +21,8 @@ namespace EventManagment.Apis.Controller.Controllers.Registrations
 
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Attendee)]
+
         [HttpGet("GetRegistrationById/{id}")]
         public async Task<ActionResult> GetRegistrationById([FromRoute] int id, CancellationToken cancellationToken)
         {
@@ -35,12 +38,16 @@ namespace EventManagment.Apis.Controller.Controllers.Registrations
             var products = await serviceManager.RegistrationService.GetAllRegistrationsAsync(specParams, cancellationToken);
             return Ok(products);
         }
+        [Authorize(Roles = Roles.Attendee)]
+
         [HttpGet("GetAll-Registration-For-Specificg-Attendd")]
         public async Task<ActionResult<Pagination<RegisterToReturn>>> GetAllRegistrationForSpecificgAttendd([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
         {
             var products = await serviceManager.RegistrationService.GetAllRegistrationForSpecificUserAsync(specParams, User, cancellationToken);
             return Ok(products);
         }
+
+        [Authorize(Roles = Roles.Attendee)]
 
         [HttpDelete("Cancel-Registration/{id}")]
         public async Task<ActionResult<string>> CancelRegistration([FromRoute] int id, CancellationToken cancellationToken)

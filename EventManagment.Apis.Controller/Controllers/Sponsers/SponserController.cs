@@ -26,7 +26,7 @@ namespace EventManagment.Apis.Controller.Controllers.Sponsers
             var result = await serviceManager.SponserService.DeleteSponser(id, cancellationToken);
             return NewResult(result);
         }
-
+        [AllowAnonymous]
         [HttpGet("GetAllSponsers")]
         public async Task<ActionResult<Pagination<SponserToReturn>>> GetAllSponsers([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
         {
@@ -34,7 +34,7 @@ namespace EventManagment.Apis.Controller.Controllers.Sponsers
             return Ok(products);
         }
 
-
+        [AllowAnonymous]
         [HttpGet("GetSponser/{id}")]
         public async Task<ActionResult> GetSponcerById([FromRoute] int id, CancellationToken cancellationToken)
         {
