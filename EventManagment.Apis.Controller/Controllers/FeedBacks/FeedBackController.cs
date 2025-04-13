@@ -24,14 +24,12 @@ namespace EventManagment.Apis.Controller.Controllers.FeedBacks
             var result = await serviceManager.FeedBackService.RemoveFeedBack(id, cancellationToken);
             return NewResult(result);
         }
-        [AllowAnonymous]
         [HttpGet("GetAllFeedBack")]
         public async Task<ActionResult<Pagination<FeedBackToRetuen>>> GetAllFeedBacks([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
         {
             var products = await serviceManager.FeedBackService.GetAllFeedBack(specParams, cancellationToken);
             return Ok(products);
         }
-        [AllowAnonymous]
         [HttpGet("GetFeedBackById/{id}")]
         public async Task<ActionResult> GetFeedBackById([FromRoute] int id, CancellationToken cancellationToken)
         {

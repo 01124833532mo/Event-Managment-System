@@ -1,4 +1,5 @@
 ﻿using EventManagment.Apis.Controller.Controllers.Base;
+using EventManagment.Apis.Controller.Filters;
 using EventManagment.Core.Application.Abstraction;
 using EventManagment.Core.Application.Abstraction.Common;
 using EventManagment.Shared.Models.Events;
@@ -54,6 +55,7 @@ namespace EventManagment.Apis.Controller.Controllers.Events
             return NewResult(result);
 
         }
+        [Cached(16)]
         [AllowAnonymous]
         [HttpGet("GetAllEvents")]
         public async Task<ActionResult<Pagination<EventToreturn>>> GetAllEvents([FromQuery] SpecParams specParams, CancellationToken cancellationToken)
