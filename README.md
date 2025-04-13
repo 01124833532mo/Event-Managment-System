@@ -31,7 +31,7 @@ Admin
 
 ### Phase 03: Event Modoule
 - Admin And Organizer Can Track Event And Use Crud Operation For Event Modoule
-- User HangFire To Send Emails To Attendes When Event Creation Or Updated Or Deleted Or Canceld
+- Use HangFire To Send Emails To Attendes When Event Creation Or Updated Or Deleted Or Canceld
 - Implement Fluent Validation To Validate On Dtos
 - Integrated Redis for performance optimization For Cached Data For Get All Events
 - Complex Logic For This Modoule
